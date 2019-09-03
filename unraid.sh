@@ -24,7 +24,7 @@ NAME=os_flavour
 # 
 # Function - For full install - create vdisk based on size in template copy clover, ovmf, icon and xml to correct locations ready to run.
 fullinstall() {
-qemu-img create -f qcow2 /image/Macinabox/macos_disk.qcow2 $VDISKSIZE
+qemu-img create -f qcow2 /image/Macinabox/macos_disk.qcow2 $vdisksize
 rsync -a --no-o /Macinabox/domainfiles/ /image/Macinabox/
 rsync -a --no-o /Macinabox/xml/Macinabox.xml /xml/Macinabox.xml 
 }
@@ -78,13 +78,6 @@ print_usage() {
 	echo
     echo "     --full-install        Try to fully install on Unraid."
     echo "     --prepare-install     Prepare for manual install all files to appdata."
-	echo
-	echo "third flag sets the vdisk size to install onto"
-	echo
-	echo "	   --32G				 set vidsk to 32 Gigs"
-	echo "	   --64G				 set vidsk to 64 Gigs"
-	echo "	   --100G				 set vidsk to 100 Gigs"
-	echo "	   --150G				 set vidsk to 350 Gigs"
     echo
 }
 # Function - error
@@ -94,10 +87,8 @@ error() {
     echo "${error_message}" 1>&2;
 }
 
-
 #
 # End of functions
-
 
 # Check flag arguements and run accordingly
 
@@ -108,19 +99,16 @@ case $argument in
         print_usage
         ;;
     -s|--high-sierra)
-        "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1
 		NAME=high-sierra-install
-		;
+        "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
         ;;
     -m|--mojave)
-        "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 ||exit 1
-		 NAME=mojave-install
-		;
+		NAME=mojave-install
+        "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
     -c|--catalina|*)
-        "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1
 		NAME=catalina-install
-		;
+        "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
         ;;
 esac
 
@@ -141,28 +129,6 @@ case $argument in
         ;;
 esac
 
-
-# Arguement uses variable set in template to set vdisk size being created	
-argument="$3"
-case $argument in
---32G)
-    echo " install vdisk set to 32 GIGS"
-	VDISKSIZE=32G
-    ;;
---64G)
-	echo " install vdisk set to 64 GIGS"
-	VDISKSIZE=64G
-    ;;
---100G)
-	echo " install vdisk set to 100 GIGS"
-	VDISKSIZE=100G
-	;;
---150G)
-	echo " install vdisk set to 150 GIGS"
-	VDISKSIZE=150G
-	;;
-   
-esac
 
 # download image 
 makeimg
