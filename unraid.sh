@@ -27,18 +27,25 @@ fullinstall() {
 qemu-img create -f qcow2 /image/Macinabox/macos_disk.qcow2 $vdisksize
 rsync -a --no-o /Macinabox/domainfiles/ /image/Macinabox/
 rsync -a --no-o /Macinabox/xml/Macinabox.xml /xml/Macinabox.xml 
+chmod -R 777 /image/Macinabox/
+chmod  777 /xml/Macinabox.xml 
+
 }
 
 # Function - For preparation/manual install - Copy clover, ovmf, icon and xml to macinabox appdata folder on unraid ready to move manually.
 prepareinstall() {
 	rsync -a --no-o /Macinabox/domainfiles/ /config
 	rsync -a --no-o /Macinabox/xml/Macinabox.xml /config/Macinabox.xml 
+	chmod -R 777 /config/
 
 }
+
+
 
 # Function - Convert downloaded image from .dmg to usuable .img image file and put in correct location
 makeimg() {
 "$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME.img"
+chmod 777 "$DIR/$NAME.img"
 }
 
 # Function - check if directories needed are present for full install and if not create them
