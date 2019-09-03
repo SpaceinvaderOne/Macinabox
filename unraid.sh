@@ -26,7 +26,7 @@ NAME=os_flavour
 fullinstall() {
 qemu-img create -f qcow2 /image/Macinabox/macos_disk.qcow2 $vdisksize
 rsync -a --no-o /Macinabox/domainfiles/ /image/Macinabox/
-rsync -a --no-o /Macinabox/xml/Macinabox.xml /xml/Macinabox.xml 
+rsync -a --no-o /Macinabox/xml/$XML /xml/$XML
 chmod -R 777 /image/Macinabox/
 chmod  777 /xml/Macinabox.xml 
 
@@ -35,7 +35,7 @@ chmod  777 /xml/Macinabox.xml
 # Function - For preparation/manual install - Copy clover, ovmf, icon and xml to macinabox appdata folder on unraid ready to move manually.
 prepareinstall() {
 	rsync -a --no-o /Macinabox/domainfiles/ /config
-	rsync -a --no-o /Macinabox/xml/Macinabox.xml /config/Macinabox.xml 
+	rsync -a --no-o /Macinabox/xml/$XML /config/$XML
 	chmod -R 777 /config/
 
 }
@@ -46,6 +46,8 @@ prepareinstall() {
 makeimg() {
 "$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME.img"
 chmod 777 "$DIR/$NAME.img"
+#cleanup
+rm -R /Macinabox/FetchMacOS/Basesystem
 }
 
 # Function - check if directories needed are present for full install and if not create them
@@ -107,14 +109,17 @@ case $argument in
         ;;
     -s|--high-sierra)
 		NAME=high-sierra-install
+		XML=Macinabox-HighSierra.xml
         "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
         ;;
     -m|--mojave)
 		NAME=mojave-install
+		XML=Macinabox-Mojave.xml
         "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
     -c|--catalina|*)
 		NAME=catalina-install
+		XML=Macinabox-Catalina.xml
         "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
         ;;
 esac
