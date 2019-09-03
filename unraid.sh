@@ -108,13 +108,19 @@ case $argument in
         print_usage
         ;;
     -s|--high-sierra)
-        "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || NAME=high-sierra-install || exit 1;
+        "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1
+		NAME=high-sierra-install
+		;
         ;;
     -m|--mojave)
-        "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || NAME=mojave-install || exit 1;
+        "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 ||exit 1
+		 NAME=mojave-install
+		;
         ;;
     -c|--catalina|*)
-        "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || NAME=catalina-install || exit 1;
+        "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1
+		NAME=catalina-install
+		;
         ;;
 esac
 
