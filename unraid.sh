@@ -15,6 +15,7 @@ IMAGE=/image/Macinabox
 # Variable - location of folder used to put os image in for preparation install.
 IMAGE2=/config/install_media
 #
+NAME=os_flavour
 # VDISK= defined from third arguement
 # End of variables
 
@@ -30,7 +31,7 @@ rsync -a --no-o /Macinabox/xml/Macinabox.xml /xml/Macinabox.xml
 
 # Function - For preparation/manual install - Copy clover, ovmf, icon and xml to macinabox appdata folder on unraid ready to move manually.
 prepareinstall() {
-	rsync -a --no-o /Macinabox/domainfiles/*.* /config
+	rsync -a --no-o /Macinabox/domainfiles/ /config
 	rsync -a --no-o /Macinabox/xml/Macinabox.xml /config/Macinabox.xml 
 
 }
