@@ -124,16 +124,16 @@ case $argument in
         echo " full install to unraid domain location"
 		IMAGE=/image/Macinabox$NAME
 		DIR=$IMAGE
-		create_full
+		fullinstall
         ;;
     --prepare-install)
         echo " preparation of install media"
 		IMAGE2=/config/install_media/$NAME
 		DIR=$IMAGE2
-		create_prep
+		prepareinstall
 		
         ;;
 esac
 
 
-Echo "I'm all done finsished"
+echo "I'm all done finsished"
