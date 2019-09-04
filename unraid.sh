@@ -44,9 +44,9 @@ prepareinstall() {
 # Function - Convert downloaded image from .dmg to usuable .img image file and put in correct location
 makeimg() {
 "$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
-chmod 777 "$DIR/$NAME.img"
+chmod 777 "$DIR/$NAME-install.img"
 #cleanup
-rm -R /Macinabox/tools/FetchMacOS/Basesystem
+rm -R /Macinabox/tools/FetchMacOS/BaseSystem
 }
 
 # Function - check if directories needed are present for full install and if not create them
