@@ -128,15 +128,16 @@ argument="$2"
 case $argument in
     --full-install)
         echo " full install to unraid domain location"
+		DIR=$IMAGE
 		create_full
 		fullinstall
-		DIR=$IMAGE
         ;;
     --prepare-install)
         echo " preparation of install media"
+		DIR=$IMAGE2
 		create_prep
 		prepareinstall
-		DIR=$IMAGE2
+		
         ;;
 esac
 
