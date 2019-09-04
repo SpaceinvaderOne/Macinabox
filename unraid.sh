@@ -1,17 +1,14 @@
 #!/bin/bash
 #
-# unraid.sh
-#
-# by SpacinvaderOne 
-# Variables
-# 
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  unraid.sh - Script used by Unraid docker conatainer to install a KVM virtual machine of different versions of macOS    # # 
+# #  by - SpaceinvaderOne                                                                                                   # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Variables    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 TOOLS=/Macinabox/tools
-
-
-
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -61,7 +58,9 @@ prepareinstall() {
 
 
 
-# Function - Convert downloaded image from .dmg to usuable .img image file and put in correct location
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Covert DMD to IMG Function - Coverts the download macOS Baseimage as .dmg to a usable .img format   # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 makeimg() {
 "$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
 chmod 777 "$DIR/$NAME-install.img"
@@ -70,7 +69,10 @@ rm -R /Macinabox/tools/FetchMacOS/BaseSystem
 }
 
 						
-# Function - print flag usage
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Print usage Function - Prints info on flags used which are passed from the Unraid docker container template  # # # # # # # # # # # # # # # # #  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 print_usage() {
     echo
     echo "First flag sets macOS Flavour is downloaded to install"
@@ -85,7 +87,46 @@ print_usage() {
     echo "     --prepare-install     Prepare for manual install all files to appdata."
     echo
 }
-# Function - error
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Print result Function - Prints info where all files went                                                     # # # # # # # # # # # # # # # # #  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+print_result1() {
+	echo
+	echo
+    echo
+    echo "MacOS inatall media was put in $DIR/$NAME-install.img"
+	echo
+    echo "Vdisk of $vdisksize was created in $IMAGE "
+    echo 
+    echo "Compatible OVMF files vere put in $IMAGE/ovmf"
+	echo 
+	echo "XML template file for the vm was placed in Unraid system files and will show in vm manager teplate after array stopped and restarted"
+	echo
+    echo "So everything is ready for starting the vm and running the installer and you should have a working VM in 15 mins!!"
+	echo
+}
+
+print_result2() {
+	echo
+	echo
+    echo
+    echo "MacOS inatall media was put in $DIR/$NAME-install.img"
+	echo
+    echo "No Vdisk was created. You will need to manaually do this as prepare option was set in docker container template"
+    echo 
+    echo "Compatible OVMF files vere put in /mnt/user/appdata/Macinabox/ovmf"
+	echo 
+	echo "XML template file for the vm was placed in /mnt/user/appdata/Macinabox/ovmf"
+	echo
+    echo "So everything is prepared. You need to move files to correct place yourself and edit/copy xml"
+	echo
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Error Function # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 error() {
     local error_message="$*"
@@ -93,6 +134,10 @@ error() {
 }
 
 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Process first flag sent from the Unraid docker container tempate - chooses which macOS version to download   # # # # # # # # # # # # # # # # #  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 argument="$1"
@@ -117,6 +162,10 @@ case $argument in
         ;;
 esac
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Process second flag sent from the Unraid docker container tempate - chooses whether a full or preparation install  # # # # # # # # # # # # # #   
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 
 argument="$2"
 case $argument in
@@ -125,15 +174,17 @@ case $argument in
 		IMAGE=/image/Macinabox$NAME
 		DIR=$IMAGE
 		fullinstall
+		print_result1
         ;;
     --prepare-install)
         echo " preparation of install media"
 		IMAGE2=/config/install_media/$NAME
 		DIR=$IMAGE2
 		prepareinstall
+		print_result2
 		
         ;;
 esac
 
 
-echo "I'm all done finsished"
+
