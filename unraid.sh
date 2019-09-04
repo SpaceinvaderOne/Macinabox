@@ -95,6 +95,7 @@ print_usage() {
 print_result1() {
 	echo
 	echo
+	echo "the reference /image below refers to where you mapped that folder on your server (normally to /mnt/user/doamins)"
     echo
     echo "MacOS inatall media was put in $DIR/$NAME-install.img"
 	echo
@@ -102,9 +103,9 @@ print_result1() {
     echo 
     echo "Compatible OVMF files vere put in $IMAGE/ovmf"
 	echo 
-	echo "XML template file for the vm was placed in Unraid system files and will show in vm manager teplate after array stopped and restarted"
+	echo "XML template file for the vm was placed in Unraid system files and will show in vm manager after array has been stopped and restarted"
 	echo
-    echo "So everything is ready for starting the vm and running the installer and you should have a working VM in 15 mins!!"
+    echo "So everything is ready for starting the vm then running the installer. So you should have a working VM in about 15 mins!!"
 	echo
 }
 
