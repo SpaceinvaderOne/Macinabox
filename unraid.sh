@@ -8,18 +8,17 @@
 
 # Variables
 # 
+FOLDER=MacOS
 # Variable - location of tools dir
 TOOLS=/Macinabox/tools
 # Variable - location of folder used to put os image in for full install.
-IMAGE=/image/Macinabox
+IMAGE=/image/Macinabox$NAME
 # Variable - location of folder used to put os image in for preparation install.
-IMAGE2=/config/install_media
+IMAGE2=/config/install_media/$NAME
 #
 NAME=os_flavour
-# VDISK= defined from third arguement
+# VDISK size defined in template
 # End of variables
-
-
 # Functions
 # 
 # Function - For full install - create vdisk based on size in template copy clover, ovmf, icon and xml to correct locations ready to run.
@@ -27,8 +26,8 @@ fullinstall() {
 qemu-img create -f qcow2 /image/Macinabox/macos_disk.qcow2 $vdisksize
 rsync -a --no-o /Macinabox/domainfiles/ /image/Macinabox/
 rsync -a --no-o /Macinabox/xml/$XML /xml/$XML
-chmod -R 777 /image/Macinabox/
-chmod  777 /xml/Macinabox.xml 
+chmod -R 766 /image/Macinabox/
+chmod  766 /xml/$XML 
 
 }
 
@@ -36,7 +35,7 @@ chmod  777 /xml/Macinabox.xml
 prepareinstall() {
 	rsync -a --no-o /Macinabox/domainfiles/ /config
 	rsync -a --no-o /Macinabox/xml/$XML /config/$XML
-	chmod -R 777 /config/
+	chmod -R 766 /config/
 
 }
 
@@ -44,10 +43,10 @@ prepareinstall() {
 
 # Function - Convert downloaded image from .dmg to usuable .img image file and put in correct location
 makeimg() {
-"$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME.img"
+"$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
 chmod 777 "$DIR/$NAME.img"
 #cleanup
-rm -R /Macinabox/FetchMacOS/Basesystem
+rm -R /Macinabox/tools/FetchMacOS/Basesystem
 }
 
 # Function - check if directories needed are present for full install and if not create them
@@ -55,9 +54,9 @@ create_full() {
 if [ ! -d $IMAGE ] ; then
 		
 			mkdir -vp $IMAGE
-			echo "created folder Macinabox"
+			echo "created folder Macinabox dirs"
 		else
-			echo " folder Macinabox already present......continuing."
+			echo "  Macinabox dirs already present......continuing."
 			
 			fi	
 			}
@@ -67,9 +66,9 @@ create_prep() {
 if [ ! -d $IMAGE2 ] ; then
 		
 mkdir -vp $IMAGE2
-echo "created folder Macinabox in vm domain location"
+echo "created  Macinabox dirs in vm domain location"
 else
-echo " folder Macinabox already present......continuing."
+echo "  Macinabox dirs already present......continuing."
 			
 fi	
 }
@@ -108,18 +107,19 @@ case $argument in
         print_usage
         ;;
     -s|--high-sierra)
-		NAME=high-sierra-install
 		XML=Macinabox-HighSierra.xml
+		NAME=HighSierra
         "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
         ;;
     -m|--mojave)
-		NAME=mojave-install
 		XML=Macinabox-Mojave.xml
+		NAME=Mojave
         "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
     -c|--catalina|*)
 		NAME=catalina-install
 		XML=Macinabox-Catalina.xml
+		NAME=Catalina
         "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
         ;;
 esac
