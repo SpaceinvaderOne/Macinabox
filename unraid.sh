@@ -8,7 +8,7 @@
 
 # Variables
 # 
-FOLDER=MacOS
+NAME=MacOS
 # Variable - location of tools dir
 TOOLS=/Macinabox/tools
 # Variable - location of folder used to put os image in for full install.
@@ -117,7 +117,6 @@ case $argument in
         "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
     -c|--catalina|*)
-		NAME=catalina-install
 		XML=Macinabox-Catalina.xml
 		NAME=Catalina
         "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
