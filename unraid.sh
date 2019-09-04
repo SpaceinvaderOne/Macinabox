@@ -10,14 +10,25 @@
 
 TOOLS=/Macinabox/tools
 
-IMAGE=/image/Macinabox$NAME
-IMAGE2=/config/install_media/$NAME
 
 
 
 
-# Function - For full install - create vdisk based on size in template copy clover, ovmf, icon and xml to correct locations ready to run.
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Full install Function - Tries to create os install and all files needed and place them ready to run VM Staright away  # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
 fullinstall() {
+	if [ ! -d $IMAGE ] ; then
+		
+				mkdir -vp $IMAGE
+				echo "created folder Macinabox dirs"
+			else
+				echo "  Macinabox dirs already present......continuing."
+			
+				fi		
+	
+makeimg
 qemu-img create -f qcow2 /$IMAGE/macos_disk.qcow2 $vdisksize
 rsync -a --no-o /Macinabox/domainfiles/ $IMAGE
 rsync -a --no-o /Macinabox/xml/$XML /xml/$XML
@@ -26,16 +37,27 @@ chmod  766 /xml/$XML
 
 }
 
-# Function - For preparation/manual install - Copy clover, ovmf, icon and xml to macinabox appdata folder on unraid ready to move manually.
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Prepare install Function - Tries to create os install and all files needed and place them in appdata folder ready for manual config of vm  # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+
 prepareinstall() {
+	if [ ! -d $IMAGE2 ] ; then
+		
+	mkdir -vp $IMAGE2
+	echo "created  Macinabox dirs in vm domain location"
+	else
+	echo "  Macinabox dirs already present......continuing."
+			
+	fi		
+	
+	makeimg
 	rsync -a --no-o /Macinabox/domainfiles/ /config
 	rsync -a --no-o /Macinabox/xml/$XML /config/$XML
 	chmod -R 766 /config/
 
 }
-
-
-
 
 
 
@@ -46,42 +68,6 @@ chmod 777 "$DIR/$NAME-install.img"
 #cleanup
 rm -R /Macinabox/tools/FetchMacOS/BaseSystem
 }
-
-
-
-
-
-
-
-
-# Function - check if directories needed are present for full install and if not create them
-create_full() {
-if [ ! -d $IMAGE ] ; then
-		
-			mkdir -vp $IMAGE
-			echo "created folder Macinabox dirs"
-		else
-			echo "  Macinabox dirs already present......continuing."
-			
-			fi	
-			}
-			
-# Function - check if directories needed for preparation install are present and if not create them
-create_prep() {
-if [ ! -d $IMAGE2 ] ; then
-		
-mkdir -vp $IMAGE2
-echo "created  Macinabox dirs in vm domain location"
-else
-echo "  Macinabox dirs already present......continuing."
-			
-fi	
-}
-
-
-
-
-
 
 						
 # Function - print flag usage
@@ -109,14 +95,6 @@ error() {
 
 
 
-
-
-
-# End of functions
-
-# Check flag arguements and run accordingly
-
-# Arguement uses variable set in template to choose which macOS version to use
 argument="$1"
 case $argument in
     -h|--help)
@@ -139,24 +117,23 @@ case $argument in
         ;;
 esac
 
-# Arguement uses variable set in template to set whether to try a full install or just prepare files
+
 argument="$2"
 case $argument in
     --full-install)
         echo " full install to unraid domain location"
+		IMAGE=/image/Macinabox$NAME
 		DIR=$IMAGE
 		create_full
-		fullinstall
         ;;
     --prepare-install)
         echo " preparation of install media"
+		IMAGE2=/config/install_media/$NAME
 		DIR=$IMAGE2
 		create_prep
-		prepareinstall
 		
         ;;
 esac
 
 
-# download image 
-makeimg
+Echo "I'm all done finsished"
