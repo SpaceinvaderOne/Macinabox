@@ -1,32 +1,27 @@
 #!/bin/bash
 #
-
 # unraid.sh
 #
 # by SpacinvaderOne 
-
-
 # Variables
 # 
-NAME=MacOS
-# Variable - location of tools dir
+
+
+
 TOOLS=/Macinabox/tools
-# Variable - location of folder used to put os image in for full install.
+
 IMAGE=/image/Macinabox$NAME
-# Variable - location of folder used to put os image in for preparation install.
 IMAGE2=/config/install_media/$NAME
-#
-NAME=os_flavour
-# VDISK size defined in template
-# End of variables
-# Functions
-# 
+
+
+
+
 # Function - For full install - create vdisk based on size in template copy clover, ovmf, icon and xml to correct locations ready to run.
 fullinstall() {
-qemu-img create -f qcow2 /image/Macinabox/macos_disk.qcow2 $vdisksize
-rsync -a --no-o /Macinabox/domainfiles/ /image/Macinabox/
+qemu-img create -f qcow2 /$IMAGE/macos_disk.qcow2 $vdisksize
+rsync -a --no-o /Macinabox/domainfiles/ $IMAGE
 rsync -a --no-o /Macinabox/xml/$XML /xml/$XML
-chmod -R 766 /image/Macinabox/
+chmod -R 766 $IMAGE
 chmod  766 /xml/$XML 
 
 }
@@ -41,6 +36,9 @@ prepareinstall() {
 
 
 
+
+
+
 # Function - Convert downloaded image from .dmg to usuable .img image file and put in correct location
 makeimg() {
 "$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
@@ -48,6 +46,13 @@ chmod 777 "$DIR/$NAME-install.img"
 #cleanup
 rm -R /Macinabox/tools/FetchMacOS/BaseSystem
 }
+
+
+
+
+
+
+
 
 # Function - check if directories needed are present for full install and if not create them
 create_full() {
@@ -72,6 +77,12 @@ echo "  Macinabox dirs already present......continuing."
 			
 fi	
 }
+
+
+
+
+
+
 						
 # Function - print flag usage
 print_usage() {
@@ -95,7 +106,12 @@ error() {
     echo "${error_message}" 1>&2;
 }
 
-#
+
+
+
+
+
+
 # End of functions
 
 # Check flag arguements and run accordingly
