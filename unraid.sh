@@ -6,36 +6,40 @@
 # #  by - SpaceinvaderOne                                                                                                   # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Variables    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-TOOLS=/Macinabox/tools
-
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Full install Function - Tries to create os install and all files needed and place them ready to run VM Staright away  # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Full install Function - Creates ready to run the macOS installer, clover, vdisk ,ovmf and vm definition in defualt domains share # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
 
 fullinstall() {
 	if [ ! -d $IMAGE ] ; then
 		
 				mkdir -vp $IMAGE
-				echo "created folder Macinabox dirs"
+				echo "created  Macinabox directories"
 			else
-				echo "  Macinabox dirs already present......continuing."
+				echo "  Macinabox directories already present......continuing."
 			
 				fi		
 	
-makeimg
-qemu-img create -f qcow2 /$IMAGE/macos_disk.qcow2 $vdisksize
+
+if [ $TYPE ='raw' ] ; then
+	
+			qemu-img create -f raw /$IMAGE/macos_disk.img $vdisksize
+			echo "created vdisk as raw"
+		else
+			qemu-img create -f qcow2 /$IMAGE/macos_disk.qcow2 $vdisksize
+		    echo "created vdisk as qcow2"
+			fi	
+makeimg		
 rsync -a --no-o /Macinabox/domainfiles/ $IMAGE
-rsync -a --no-o /Macinabox/xml/$XML /xml/$XML
-chmod -R 766 $IMAGE
+rsync -a --no-o /Macinabox/xml/$TYPE/$XML /xml/$XML
+chmod -R 777 $IMAGE
 chmod  766 /xml/$XML 
 
 }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Prepare install Function - Tries to create os install and all files needed and place them in appdata folder ready for manual config of vm  # # 
+# #  Prepare install Function - Creates macOS installer and all other files needed and place them in appdata folder ready for manual config of vm # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 
@@ -51,8 +55,8 @@ prepareinstall() {
 	
 	makeimg
 	rsync -a --no-o /Macinabox/domainfiles/ /config
-	rsync -a --no-o /Macinabox/xml/$XML /config/$XML
-	chmod -R 766 /config/
+	rsync -a --no-o /Macinabox/xml/$TYPE/$XML /config/$XML
+	chmod -R 777 /config/
 
 }
 
@@ -62,7 +66,7 @@ prepareinstall() {
 # #  Covert DMD to IMG Function - Coverts the download macOS Baseimage as .dmg to a usable .img format   # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 makeimg() {
-"$TOOLS/dmg2img" "$TOOLS/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
+"/Macinabox/tools/dmg2img" "/Macinabox/tools/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
 chmod 777 "$DIR/$NAME-install.img"
 #cleanup
 rm -R /Macinabox/tools/FetchMacOS/BaseSystem
@@ -99,13 +103,13 @@ print_result1() {
     echo
     echo "MacOS inatall media was put in $DIR/$NAME-install.img"
 	echo
-    echo "Vdisk of $vdisksize was created in $IMAGE "
+    echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
     echo 
     echo "Compatible OVMF files vere put in $IMAGE/ovmf"
 	echo 
 	echo "XML template file for the vm was placed in Unraid system files and will show in vm manager after array has been stopped and restarted"
 	echo
-    echo "So everything is ready for starting the vm then running the installer. So you should have a working VM in about 15 mins!!"
+    echo "Now you must stop and start the array. Then start the vm and the install will start"
 	echo
 }
 
@@ -119,9 +123,9 @@ print_result2() {
     echo 
     echo "Compatible OVMF files vere put in /mnt/user/appdata/Macinabox/ovmf"
 	echo 
-	echo "XML template file for the vm was placed in /mnt/user/appdata/Macinabox/ovmf"
+	echo "XML template file for the vm was placed in /mnt/user/appdata/Macinabox"
 	echo
-    echo "So everything is prepared. You need to move files to correct place yourself and edit/copy xml"
+    echo "So everything is prepared. You need to move files to correct place yourself and edit/copy xml then start the install"
 	echo
 }
 
@@ -149,17 +153,17 @@ case $argument in
     -s|--high-sierra)
 		XML=MacinaboxHighSierra.xml
 		NAME=HighSierra
-        "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
         ;;
-    -m|--mojave)
+    -m|--mojave|*)
 		XML=MacinaboxMojave.xml
 		NAME=Mojave
-        "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
-    -c|--catalina|*)
+    -c|--catalina)
 		XML=MacinaboxCatalina.xml
 		NAME=Catalina
-        "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
         ;;
 esac
 
