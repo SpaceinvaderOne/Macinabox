@@ -147,17 +147,17 @@ case $argument in
         print_usage
         ;;
     -s|--high-sierra)
-		XML=Macinabox-HighSierra.xml
+		XML=MacinaboxHighSierra.xml
 		NAME=HighSierra
         "$TOOLS/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
         ;;
     -m|--mojave)
-		XML=Macinabox-Mojave.xml
+		XML=MacinaboxMojave.xml
 		NAME=Mojave
         "$TOOLS/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
     -c|--catalina|*)
-		XML=Macinabox-Catalina.xml
+		XML=MacinaboxCatalina.xml
 		NAME=Catalina
         "$TOOLS/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
         ;;
