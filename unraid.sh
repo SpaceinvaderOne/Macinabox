@@ -101,7 +101,7 @@ print_result1() {
 	echo
 	echo "the reference /image below refers to where you mapped that folder on your server (normally to /mnt/user/doamins)"
     echo
-    echo "MacOS inatall media was put in $DIR/$NAME-install.img"
+    echo "MacOS install media was put in $DIR/$NAME-install.img"
 	echo
     echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
     echo 
@@ -163,7 +163,7 @@ case $argument in
     -c|--catalina)
 		XML=MacinaboxCatalina.xml
 		NAME=Catalina
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c DeveloperSeed || exit 1;
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
         ;;
 esac
 
