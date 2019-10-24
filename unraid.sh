@@ -6,6 +6,57 @@
 # #  by - SpaceinvaderOne                                                                                                   # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Process first flag sent from the Unraid docker container tempate - chooses which macOS version to download   # # # # # # # # # # # # # # # # #  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+argument="$1"
+case $argument in
+    -h|--help)
+        print_usage
+        ;;
+    -s|--high-sierra)
+		XML=MacinaboxHighSierra.xml
+		NAME=HighSierra
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease13 || exit 1;
+        ;;
+    -m|--mojave)
+		XML=MacinaboxMojave.xml
+		NAME=Mojave
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
+        ;;
+    -c|--catalina|*)
+		XML=MacinaboxCatalina.xml
+		NAME=Catalina
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
+        ;;
+esac
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Process second flag sent from the Unraid docker container tempate - chooses whether a full or preparation install  # # # # # # # # # # # # # #   
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+argument="$2"
+case $argument in
+    --full-install)
+        echo " full install to unraid domain location"
+		IMAGE=/image/Macinabox$NAME
+		DIR=$IMAGE
+		fullinstall
+		print_result1
+        ;;
+    --prepare-install)
+        echo " preparation of install media"
+		IMAGE2=/config/install_media/$NAME
+		DIR=$IMAGE2
+		prepareinstall
+		print_result2
+		
+        ;;
+esac
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # #  Full install Function - Creates ready to run the macOS installer, clover, vdisk ,ovmf and vm definition in defualt domains share # # # 
@@ -140,56 +191,6 @@ error() {
 
 
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Process first flag sent from the Unraid docker container tempate - chooses which macOS version to download   # # # # # # # # # # # # # # # # #  
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-
-argument="$1"
-case $argument in
-    -h|--help)
-        print_usage
-        ;;
-    -s|--high-sierra)
-		XML=MacinaboxHighSierra.xml
-		NAME=HighSierra
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
-        ;;
-    -m|--mojave)
-		XML=MacinaboxMojave.xml
-		NAME=Mojave
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
-        ;;
-    -c|--catalina|*)
-		XML=MacinaboxCatalina.xml
-		NAME=Catalina
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
-        ;;
-esac
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Process second flag sent from the Unraid docker container tempate - chooses whether a full or preparation install  # # # # # # # # # # # # # #   
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-
-argument="$2"
-case $argument in
-    --full-install)
-        echo " full install to unraid domain location"
-		IMAGE=/image/Macinabox$NAME
-		DIR=$IMAGE
-		fullinstall
-		print_result1
-        ;;
-    --prepare-install)
-        echo " preparation of install media"
-		IMAGE2=/config/install_media/$NAME
-		DIR=$IMAGE2
-		prepareinstall
-		print_result2
-		
-        ;;
-esac
 
 
 
