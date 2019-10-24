@@ -1,8 +1,7 @@
 ## **Macinabox**
 
 This is a container to be run on an Unraid server. It will help with the setup of a MacOS VM.
-To use this please install through Unraids community applications 
-
+To use this please install through Unraids community applications but you can see the template here https://raw.githubusercontent.com/SpaceinvaderOne/Docker-Templates-Unraid/master/spaceinvaderone/macinabox.xml
 
 
 > *Variables in unraid template*
