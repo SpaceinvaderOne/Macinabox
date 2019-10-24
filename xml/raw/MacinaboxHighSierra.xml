@@ -3,7 +3,7 @@
   <name>MacinaboxHighSierra</name>
   <description>MacOS High Sierra</description>
   <metadata>
-    <vmtemplate xmlns="unraid" name="MacOS" icon="/mnt/user/domains/MacinaboxHighSierra/icon/osx.png" os="HighSierra"/>
+    <vmtemplate xmlns="unraid" name="MacOS" icon="/mnt/user/domains/MacinaboxHighSierra/icon/highsierra.png" os="HighSierra"/>
   </metadata>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>

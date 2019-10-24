@@ -3,7 +3,7 @@
   <name>MacinaboxMojave</name>
   <description>MacOS Mojave</description>
   <metadata>
-    <vmtemplate xmlns="unraid" name="MacOS" icon="/mnt/user/domains/MacinaboxMojave/icon/osx.png" os="Catalina"/>
+    <vmtemplate xmlns="unraid" name="MacOS" icon="/mnt/user/domains/MacinaboxMojave/icon/mojave.png" os="Catalina"/>
   </metadata>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
