@@ -152,18 +152,25 @@ case $argument in
     -s|--high-sierra)
 		XML=MacinaboxHighSierra.xml
 		NAME=HighSierra
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease13 || exit 1;
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 041-91758  -c PublicRelease13 || exit 1;
         ;;
     -m|--mojave)
 		XML=MacinaboxMojave.xml
 		NAME=Mojave
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-26589  -c PublicRelease14 || exit 1;
         ;;
     -c|--catalina|*)
 		XML=MacinaboxCatalina.xml
 		NAME=Catalina
         "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
         ;;
+    -d|--catalinabeta)
+		XML=MacinaboxCatalina.xml
+		NAME=Catalina
+        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-32950 -c DeveloperSeed || exit 1;
+        ;;
+		
+	
 esac
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
