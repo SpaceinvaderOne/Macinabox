@@ -22,7 +22,7 @@ fullinstall() {
 				fi		
 	
 
-if [ $TYPE ='raw' ] ; then
+    if [ $TYPE ='raw' ] ; then
 	
 			qemu-img create -f raw /$IMAGE/macos_disk.img $vdisksize
 			echo "created vdisk as raw"
@@ -155,12 +155,12 @@ case $argument in
 		NAME=HighSierra
         "/Macinabox/tools/FetchMacOS/fetch.sh" -p 091-95155 -c PublicRelease13 || exit 1;
         ;;
-    -m|--mojave|*)
+    -m|--mojave)
 		XML=MacinaboxMojave.xml
 		NAME=Mojave
         "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease14 || exit 1;
         ;;
-    -c|--catalina)
+    -c|--catalina|*)
 		XML=MacinaboxCatalina.xml
 		NAME=Catalina
         "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
