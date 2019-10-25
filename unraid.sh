@@ -23,7 +23,7 @@ fullinstall() {
 				fi		
 	
 
-    if [ $TYPE ='raw' ] ; then
+    if [ $TYPE == "raw" ] ; then
 	
 			qemu-img create -f raw /$IMAGE/macos_disk.img $vdisksize
 			echo "created vdisk as raw"
