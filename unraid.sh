@@ -62,11 +62,16 @@ chmod -R 777 $IMAGE
 if [ ! -e /xml/$XML ] ; then
 rsync -a --no-o /Macinabox/xml/$TYPE/$XML /xml/$XML
 chmod  777 /xml/$XML 
-SKIPXML=yes
+echo "vm template moved to server"
+echo "."
+echo "."
+
 else
+	vmtemplate=""
 	echo "vm template was already present please manually delete it, if you want me to replace it"
 	echo "."
 	echo "."
+	SKIPXML=yes
 fi
 
 }
@@ -203,17 +208,17 @@ print_result1() {
     echo "(normally to /mnt/user/doamins)"
 	echo "."
 	echo "."
-	if [ ! $SKIPIMG = "yes" ] ; then
-    echo "MacOS install media was put in $DIR/$NAME-install.img"
+		if [ "$SKIPIMG" = "yes" ] ; then
+    echo "Install media was already present"
 else
-	echo "Install media was already present"
+	echo "MacOS install media was put in $DIR/$NAME-install.img"
 fi
 	echo "."
 	echo "."
-	if [ ! $SKIPVDISK = "yes" ] ; then
-    echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
+		if [ "$SKIPVDISK" = "yes" ] ; then
+    echo "Vdisk was already present"
 else
-	echo "Vdisk was already present"
+	echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
 fi
     echo "."
     echo "."
@@ -223,20 +228,24 @@ fi
     echo "Compatible OVMF files vere put in $IMAGE/ovmf"
 	echo "."
 	echo "."
-	if [ ! $SKIPXML == "yes" ] ; then
+	if [ "$SKIPXML" = "yes" ] ; then
+		echo "An XML file was already present for Macinabox$NAME you will need to manually delete if you want me to replace this"
+else
 	echo "XML template file for the vm was placed in Unraid system files. This file assumes your vm path"
 	echo "is /mnt/user/domains if it isnt you will need to manually edit the template changing the locations accordingly"
-else
-	echo "An XML file was already present for Macinabox$NAME you will need to manually delete if you want me to replace this"
 fi
 	echo "."
 	echo "."
 	echo "OK process has finished at $currentDate "
-	if [ ! $SKIPXML == "yes" ] ; then
+	if [ "$SKIPXML" = "yes" ] ; then
+	echo "."
+else
 	echo "."
 	echo "."
     echo "Now you must stop and start the array. The vm will be visable in the Unraid VM manager"
+	
 	fi
+		
 	
 }
 
