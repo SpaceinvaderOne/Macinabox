@@ -203,14 +203,14 @@ print_result1() {
     echo "(normally to /mnt/user/doamins)"
 	echo "."
 	echo "."
-	if [ ! $SKIPIMG == "yes" ] ; then
+	if [ ! $SKIPIMG = "yes" ] ; then
     echo "MacOS install media was put in $DIR/$NAME-install.img"
 else
 	echo "Install media was already present"
 fi
 	echo "."
 	echo "."
-	if [ ! $SKIPVDISK == "yes" ] ; then
+	if [ ! $SKIPVDISK = "yes" ] ; then
     echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
 else
 	echo "Vdisk was already present"
