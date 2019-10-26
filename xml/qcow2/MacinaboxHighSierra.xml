@@ -134,8 +134,6 @@
   <qemu:commandline>
     <qemu:arg value='-usb'/>
     <qemu:arg value='-device'/>
-    <qemu:arg value='usb-mouse,bus=usb-bus.0'/>
-    <qemu:arg value='-device'/>
     <qemu:arg value='usb-kbd,bus=usb-bus.0'/>
     <qemu:arg value='-device'/>
     <qemu:arg value='isa-applesmc,osk=ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc'/>

@@ -11,31 +11,63 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # #  Full install Function - Creates ready to run the macOS installer, clover, vdisk ,ovmf and vm definition in defualt domains share # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
+currentDate=`date`
+echo
+echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+echo "Starting process at $currentDate "
+echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+echo
 
 fullinstall() {
 	if [ ! -d $IMAGE ] ; then
 		
 				mkdir -vp $IMAGE
-				echo "created  Macinabox directories"
+				echo "I have created the Macinabox directories"
+			    echo "."
+			    echo "."
 			else
-				echo "  Macinabox directories already present......continuing."
+				echo "  Macinabox directories are already present......continuing."
+			    echo "."
+			    echo "."
 			
 				fi		
-	
 
-    if [ $TYPE == "raw" ] ; then
+
+    if [ $TYPE == "raw" ] && [ ! -e $IMAGE/macos_disk.img ]; then
 	
 			qemu-img create -f raw /$IMAGE/macos_disk.img $vdisksize
-			echo "created vdisk as raw"
-		else
+			echo "."
+			echo "Created vdisk as type raw"
+			echo "."
+			echo "."
+	
+		elif [ $TYPE == "qcow2" ] &&  [ ! -e $IMAGE/macos_disk.qcow2 ]; then
 			qemu-img create -f qcow2 /$IMAGE/macos_disk.qcow2 $vdisksize
-		    echo "created vdisk as qcow2"
-			fi	
+			echo "."
+		    echo "Created vdisk as type qcow2"
+			echo "."
+			echo "."
+		else
+			echo "There is already a vdisk  image here...skipping"
+			echo "."
+			echo "."
+			SKIPVDISK=yes
+
+			fi
+			
 makeimg		
 rsync -a --no-o /Macinabox/domainfiles/ $IMAGE
-rsync -a --no-o /Macinabox/xml/$TYPE/$XML /xml/$XML
 chmod -R 777 $IMAGE
-chmod  766 /xml/$XML 
+
+if [ ! -e /xml/$XML ] ; then
+rsync -a --no-o /Macinabox/xml/$TYPE/$XML /xml/$XML
+chmod  777 /xml/$XML 
+SKIPXML=yes
+else
+	echo "vm template was already present please manually delete it, if you want me to replace it"
+	echo "."
+	echo "."
+fi
 
 }
 
@@ -48,11 +80,15 @@ prepareinstall() {
 	if [ ! -d $IMAGE2 ] ; then
 		
 	mkdir -vp $IMAGE2
-	echo "created  Macinabox dirs in vm domain location"
-	else
-	echo "  Macinabox dirs already present......continuing."
-			
-	fi		
+	echo "I have created the Macinabox directories"
+    echo "."
+    echo "."
+else
+	echo "  Macinabox directories are already present......continuing."
+    echo "."
+    echo "."
+
+	fi			
 	
 	makeimg
 	rsync -a --no-o /Macinabox/domainfiles/ /config
@@ -67,12 +103,70 @@ prepareinstall() {
 # #  Covert DMD to IMG Function - Coverts the download macOS Baseimage as .dmg to a usable .img format   # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 makeimg() {
+if [ ! -e $DIR/$NAME-install.img ] ; then
 "/Macinabox/tools/dmg2img" "/Macinabox/tools/FetchMacOS/BaseSystem/BaseSystem.dmg" "$DIR/$NAME-install.img"
 chmod 777 "$DIR/$NAME-install.img"
 #cleanup
-rm -R /Macinabox/tools/FetchMacOS/BaseSystem
+rm -r /Macinabox/tools/FetchMacOS/BaseSystem/*
+else
+SKIPIMG=yes
+fi
 }
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Pull High sierra if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+pullhsierra() {
+
+	if [ ! -e /image/MacinaboxHighSierra/HighSierra-install.img ] ; then
+		echo "I am going to download the HighSierra recovery media. Please be patient!"
+	    echo "."
+	    echo "."
+    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 041-91758  -c PublicRelease13 || exit 1;
+else
+	echo "Media already exists. I have already downloaded the High Sierra install media before"
+    echo "."
+    echo "."
+
+fi
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Pull Mojave if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+pullmojave() {
+
+	if [ ! -e /image/MacinaboxMojave/Mojave-install.img ] ; then
+		echo "I am going to download the Mojave recovery media. Please be patient!"
+	    echo "."
+	    echo "."
+    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-26589  -c PublicRelease14 || exit 1;
+else
+	echo "Media already exists. I have already downloaded the Mojave install media before"
+    echo "."
+    echo "."
+
+fi
+}
+
+	
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Pull Catalina if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+	pullmojave() {
+
+		if [ ! -e /image/MacinaboxCatalina/Catalina-install.img ] ; then
+			echo "I am going to download the Catalina recovery media. Please be patient!"
+		    echo "."
+		    echo "."
+	    "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
+	else
+		echo "Media already exists. I have already downloaded the Catalina install media before"
+	    echo "."
+	    echo "."
+
+	fi
+	}
 						
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Print usage Function - Prints info on flags used which are passed from the Unraid docker container template  # # # # # # # # # # # # # # # # #  
@@ -98,26 +192,61 @@ print_usage() {
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 print_result1() {
-	echo
-	echo
-	echo "the reference /image below refers to where you mapped that folder on your server (normally to /mnt/user/doamins)"
-    echo
-    echo "MacOS install media was put in $DIR/$NAME-install.img"
-	echo
-    echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo 	
+	echo "Summary of what has been done"
     echo 
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "."
+	echo "."
+	echo "The reference /image below refers to where you mapped that folder in the docker template on your server "
+    echo "(normally to /mnt/user/doamins)"
+	echo "."
+	echo "."
+	if [ ! $SKIPIMG == "yes" ] ; then
+    echo "MacOS install media was put in $DIR/$NAME-install.img"
+else
+	echo "Install media was already present"
+fi
+	echo "."
+	echo "."
+	if [ ! $SKIPVDISK == "yes" ] ; then
+    echo "A $TYPE Vdisk of $vdisksize was created in $IMAGE "
+else
+	echo "Vdisk was already present"
+fi
+    echo "."
+    echo "."
+    echo "Uptodate clover image was put in $IMAGE"
+    echo "."
+	echo "."
     echo "Compatible OVMF files vere put in $IMAGE/ovmf"
-	echo 
-	echo "XML template file for the vm was placed in Unraid system files and will show in vm manager after array has been stopped and restarted"
-	echo
-    echo "Now you must stop and start the array. Then start the vm and the install will start"
-	echo
+	echo "."
+	echo "."
+	if [ ! $SKIPXML == "yes" ] ; then
+	echo "XML template file for the vm was placed in Unraid system files. This file assumes your vm path"
+	echo "is /mnt/user/domains if it isnt you will need to manually edit the template changing the locations accordingly"
+else
+	echo "An XML file was already present for Macinabox$NAME you will need to manually delete if you want me to replace this"
+fi
+	echo "."
+	echo "."
+	echo "OK process has finished at $currentDate "
+	if [ ! $SKIPXML == "yes" ] ; then
+	echo "."
+	echo "."
+    echo "Now you must stop and start the array. The vm will be visable in the Unraid VM manager"
+	fi
+	
 }
 
 print_result2() {
-	echo
-	echo
-    echo
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "."	
+	echo "Summary of what has been done"
+    echo "."
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "."
     echo "MacOS inatall media was put in $DIR/$NAME-install.img"
 	echo
     echo "No Vdisk was created. You will need to manaually do this as prepare option was set in docker container template"
@@ -126,8 +255,10 @@ print_result2() {
 	echo 
 	echo "XML template file for the vm was placed in /mnt/user/appdata/Macinabox"
 	echo
-    echo "So everything is prepared. You need to move files to correct place yourself and edit/copy xml then start the install"
-	echo
+    echo "Everything is now prepared. You need to move files to correct place yourself and edit/copy xml then start the install"
+	echo "."
+	echo "."
+	echo "OK process has finished at $currentDate "
 }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -152,22 +283,17 @@ case $argument in
     -s|--high-sierra)
 		XML=MacinaboxHighSierra.xml
 		NAME=HighSierra
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 041-91758  -c PublicRelease13 || exit 1;
-        ;;
+		pullhsierra
+		;;
     -m|--mojave)
 		XML=MacinaboxMojave.xml
 		NAME=Mojave
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-26589  -c PublicRelease14 || exit 1;
+		pullmojave
         ;;
     -c|--catalina|*)
 		XML=MacinaboxCatalina.xml
 		NAME=Catalina
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -l -c PublicRelease || exit 1;
-        ;;
-    -d|--catalinabeta)
-		XML=MacinaboxCatalina.xml
-		NAME=Catalina
-        "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-32950 -c DeveloperSeed || exit 1;
+		pullcatalina
         ;;
 		
 	
@@ -181,14 +307,18 @@ esac
 argument="$2"
 case $argument in
     --full-install)
-        echo " full install to unraid domain location"
 		IMAGE=/image/Macinabox$NAME
 		DIR=$IMAGE
+		echo " Full install starting to unraid domain $IMAGE"
+		echo "."
+		echo "."
 		fullinstall
 		print_result1
         ;;
     --prepare-install)
         echo " preparation of install media"
+		echo "."
+		echo "."
 		IMAGE2=/config/install_media/$NAME
 		DIR=$IMAGE2
 		prepareinstall

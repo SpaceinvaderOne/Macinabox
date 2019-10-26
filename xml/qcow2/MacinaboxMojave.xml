@@ -3,7 +3,7 @@
   <name>MacinaboxMojave</name>
   <description>MacOS Mojave</description>
   <metadata>
-    <vmtemplate xmlns="unraid" name="MacOS" icon="/mnt/user/domains/MacinaboxMojave/icon/mojave.png" os="Catalina"/>
+    <vmtemplate xmlns="unraid" name="MacOS" icon="/mnt/user/domains/MacinaboxMojave/icon/mojave.png" os="Mojave"/>
   </metadata>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
@@ -133,8 +133,6 @@
   </devices>
   <qemu:commandline>
     <qemu:arg value='-usb'/>
-    <qemu:arg value='-device'/>
-    <qemu:arg value='usb-mouse,bus=usb-bus.0'/>
     <qemu:arg value='-device'/>
     <qemu:arg value='usb-kbd,bus=usb-bus.0'/>
     <qemu:arg value='-device'/>
