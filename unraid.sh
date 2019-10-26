@@ -153,7 +153,7 @@ fi
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Pull Catalina if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-	pullmojave() {
+	pullcatalina() {
 
 		if [ ! -e /image/MacinaboxCatalina/Catalina-install.img ] ; then
 			echo "I am going to download the Catalina recovery media. Please be patient!"
