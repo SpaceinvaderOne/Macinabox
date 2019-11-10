@@ -242,7 +242,7 @@ fi
 else
 	echo "."
 	echo "."
-    echo "Now you must stop and start the array. The vm will be visable in the Unraid VM manager"
+    echo "Now you must stop and start the array. The vm will be visible in the Unraid VM manager"
 	
 	fi
 		
