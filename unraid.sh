@@ -164,7 +164,7 @@ fi
 			echo "I am going to download the Catalina recovery media. Please be patient!"
 		    echo "."
 		    echo "."
-	    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-10700 -c PublicRelease || exit 1;
+	    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-44387 -c PublicRelease || exit 1;
 	else
 		echo "Media already exists. I have already downloaded the Catalina install media before"
 	    echo "."
