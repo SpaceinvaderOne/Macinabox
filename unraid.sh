@@ -2,15 +2,15 @@
 #
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  unraid.sh - Script used by Unraid docker conatainer to install a KVM virtual machine of different versions of macOS    # # 
+# #  unraid.sh - Script used by Unraid docker container to install a KVM virtual machine of different versions of macOS    # # 
 # #  by - SpaceinvaderOne                                                                                                   # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# #  Full install Function - Creates ready to run the macOS installer, clover, vdisk ,ovmf and vm definition in defualt domains share # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Full install Function - Creates ready to run macOS installer, clover, vdisk, ovmf and vm definition in default domains share # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # 
 currentDate=`date`
 echo
 echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
@@ -26,7 +26,7 @@ fullinstall() {
 			    echo "."
 			    echo "."
 			else
-				echo "  Macinabox directories are already present......continuing."
+				echo "  Macinabox directories are already present... continuing."
 			    echo "."
 			    echo "."
 			
@@ -48,7 +48,7 @@ fullinstall() {
 			echo "."
 			echo "."
 		else
-			echo "There is already a vdisk  image here...skipping"
+			echo "There is already a vdisk  image here... skipping"
 			echo "."
 			echo "."
 			SKIPVDISK=yes
@@ -68,7 +68,7 @@ echo "."
 
 else
 	vmtemplate=""
-	echo "vm template was already present please manually delete it, if you want me to replace it"
+	echo "vm template was already present. Please manually delete it, if you want me to replace it."
 	echo "."
 	echo "."
 	SKIPXML=yes
@@ -77,7 +77,7 @@ fi
 }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Prepare install Function - Creates macOS installer and all other files needed and place them in appdata folder ready for manual config of vm # 
+# #  Prepare install Function - Creates macOS installer and all other files needed and places them in appdata folder ready for manual config of vm # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 
@@ -89,7 +89,7 @@ prepareinstall() {
     echo "."
     echo "."
 else
-	echo "  Macinabox directories are already present......continuing."
+	echo "  Macinabox directories are already present... continuing"
     echo "."
     echo "."
 
@@ -105,7 +105,7 @@ else
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Covert DMD to IMG Function - Coverts the download macOS Baseimage as .dmg to a usable .img format   # # # # # # # # # # # # # # # # # # # # # 
+# #  Covert DMG to IMG Function - Coverts the downloaded macOS Baseimage as .dmg to a usable .img format   # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 makeimg() {
 if [ ! -e $DIR/$NAME-install.img ] ; then
@@ -119,7 +119,7 @@ fi
 }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Pull High sierra if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
+# #  Pull High Sierra if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 pullhsierra() {
 
@@ -129,7 +129,7 @@ pullhsierra() {
 	    echo "."
     "/Macinabox/tools/FetchMacOS/fetch.sh" -p 041-91758  -c PublicRelease13 || exit 1;
 else
-	echo "Media already exists. I have already downloaded the High Sierra install media before"
+	echo "Media already exists. I have already downloaded the High Sierra install media before."
     echo "."
     echo "."
 
@@ -147,7 +147,7 @@ pullmojave() {
 	    echo "."
     "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-26589  -c PublicRelease14 || exit 1;
 else
-	echo "Media already exists. I have already downloaded the Mojave install media before"
+	echo "Media already exists. I have already downloaded the Mojave install media before."
     echo "."
     echo "."
 
@@ -166,7 +166,7 @@ fi
 		    echo "."
 	    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 061-96006 -c PublicRelease || exit 1;
 	else
-		echo "Media already exists. I have already downloaded the Catalina install media before"
+		echo "Media already exists. I have already downloaded the Catalina install media before."
 	    echo "."
 	    echo "."
 
@@ -179,13 +179,13 @@ fi
 
 print_usage() {
     echo
-    echo "First flag sets macOS Flavour is downloaded to install"
+    echo "First flag sets which macOS Flavour to download and install"
 	echo
     echo " -s, --high-sierra         Fetch & install High Sierra media."
     echo " -m, --mojave              Fetch & install Mojave media."
     echo " -c, --catalina            Fetch & install Catalina media."
 	echo 
-	echo "second flag sets install type"
+	echo "Second flag sets install type"
 	echo
     echo "     --full-install        Try to fully install on Unraid."
     echo "     --prepare-install     Prepare for manual install all files to appdata."
@@ -205,7 +205,7 @@ print_result1() {
     echo "."
 	echo "."
 	echo "The reference /image below refers to where you mapped that folder in the docker template on your server "
-    echo "(normally to /mnt/user/doamins)"
+    echo "(normally to /mnt/user/domains)"
 	echo "."
 	echo "."
 		if [ "$SKIPIMG" = "yes" ] ; then
@@ -222,17 +222,17 @@ else
 fi
     echo "."
     echo "."
-    echo "Uptodate clover image was put in $IMAGE"
+    echo "Up to date clover image was put in $IMAGE"
     echo "."
 	echo "."
     echo "Compatible OVMF files vere put in $IMAGE/ovmf"
 	echo "."
 	echo "."
 	if [ "$SKIPXML" = "yes" ] ; then
-		echo "An XML file was already present for Macinabox$NAME you will need to manually delete if you want me to replace this"
+		echo "An XML file was already present for Macinabox$NAME. You will need to manually delete if you want me to replace this"
 else
 	echo "XML template file for the vm was placed in Unraid system files. This file assumes your vm path"
-	echo "is /mnt/user/domains if it isnt you will need to manually edit the template changing the locations accordingly"
+	echo "is /mnt/user/domains. If it isn't you will need to manually edit the template changing the locations accordingly"
 fi
 	echo "."
 	echo "."
@@ -256,9 +256,9 @@ print_result2() {
     echo "."
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     echo "."
-    echo "MacOS inatall media was put in $DIR/$NAME-install.img"
+    echo "MacOS install media was put in $DIR/$NAME-install.img"
 	echo
-    echo "No Vdisk was created. You will need to manaually do this as prepare option was set in docker container template"
+    echo "No Vdisk was created. You will need to manually do this as prepare option was set in docker container template"
     echo 
     echo "Compatible OVMF files vere put in /mnt/user/appdata/Macinabox/ovmf"
 	echo 
@@ -280,7 +280,7 @@ error() {
 }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Process first flag sent from the Unraid docker container tempate - chooses which macOS version to download   # # # # # # # # # # # # # # # # #  
+# #  Process first flag sent from the Unraid docker container template - chooses which macOS version to download   # # # # # # # # # # # # # # # # #  
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
@@ -309,7 +309,7 @@ case $argument in
 esac
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Process second flag sent from the Unraid docker container tempate - chooses whether a full or preparation install  # # # # # # # # # # # # # #   
+# #  Process second flag sent from the Unraid docker container template - chooses whether a full or preparation install  # # # # # # # # # # # # # #   
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
@@ -335,10 +335,3 @@ case $argument in
 		
         ;;
 esac
-
-
-
-
-
-
-
