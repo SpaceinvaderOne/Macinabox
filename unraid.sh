@@ -205,7 +205,7 @@ print_result1() {
     echo "."
 	echo "."
 	echo "The reference /image below refers to where you mapped that folder in the docker template on your server "
-    echo "(normally to /mnt/user/doamins)"
+    echo "(normally to /mnt/user/domains)"
 	echo "."
 	echo "."
 		if [ "$SKIPIMG" = "yes" ] ; then
