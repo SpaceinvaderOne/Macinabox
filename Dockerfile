@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:18.04
 MAINTAINER SpaceinvaderOne
 RUN apt-get update && apt-get -y install qemu git python python-pip bash rsync
 COPY . /Macinabox
