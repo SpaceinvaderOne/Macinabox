@@ -164,7 +164,7 @@ fi
 			echo "I am going to download the Catalina recovery media. Please be patient!"
 		    echo "."
 		    echo "."
-	    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 001-36801 -c PublicRelease || exit 1;
+	    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 001-51042 -c PublicRelease || exit 1;
 	else
 		echo "Media already exists. I have already downloaded the Catalina install media before"
 	    echo "."
@@ -172,25 +172,6 @@ fi
 
 	fi
 	}
-	
-
-	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-	# #  Pull Bigsur beta if not already downloaded   # # # # # # # # # # # # # # # # # # # # # 
-	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-		pullbigsur() {
-
-			if [ ! -e /image/MacinaboxBigsur/Bigsur-install.img ] ; then
-				echo "I am going to download the Bigsur beta media. Please be patient!"
-			    echo "."
-			    echo "."
-		    "/Macinabox/tools/FetchMacOS/fetch.sh" -p 001-26097 -c PublicRelease || exit 1;
-		else
-			echo "Media already exists. I have already downloaded the Big Sur beta install media before"
-		    echo "."
-		    echo "."
-
-		fi
-		}
 						
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Print usage Function - Prints info on flags used which are passed from the Unraid docker container template  # # # # # # # # # # # # # # # # #  
@@ -203,7 +184,6 @@ print_usage() {
     echo " -s, --high-sierra         Fetch & install High Sierra media."
     echo " -m, --mojave              Fetch & install Mojave media."
     echo " -c, --catalina            Fetch & install Catalina media."
-	echo " -b, --bigsur              Fetch & install Bigsur beta media."
 	echo 
 	echo "second flag sets install type"
 	echo
@@ -324,11 +304,6 @@ case $argument in
 		NAME=Catalina
 		pullcatalina
         ;;
-    -b|--bigsur)
-		XML=MacinaboxBigsur.xml
-		NAME=Bigsur
-		pullbigsur
-        ;;
 		
 	
 esac
@@ -360,10 +335,3 @@ case $argument in
 		
         ;;
 esac
-
-
-
-
-
-
-
