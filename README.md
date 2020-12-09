@@ -3,38 +3,9 @@
 This is a container to be run on an Unraid server. It will help with the setup of a MacOS VM.
 To use this please install through Unraid's community applications but you can see the template here https://raw.githubusercontent.com/SpaceinvaderOne/Docker-Templates-Unraid/master/spaceinvaderone/macinabox.xml
 
+Macinabox will download and install Big Sur, Catalina, Mojave or High Sierra. It will auto install the vm onto an Unraid server using Opencore as the bootloader.
+Macinabox installs a userscript to the server that when run will also fix any xml in the macOS vm after having been edited in the Unraid VM Manager.
 
-> *Variables in unraid template*
-
-flavour 
-
-            --catalina
-            --mojave
-            --high-sierra
-
-vminstall
-
-                --full-install
-                --prepare-install
-
-TYPE
-   
-
-       qcow2
-       raw
-
-vdisksize
-
-              64G   (or the size you want)
-
-> *Paths in template*
+If you have a version of macinabox installed before Dec 9 2020 then please make sure to delete the old container template and apdata before installing the new version.
 
 
-
-
-
-
-    /image                                   /mnt/user/domains/
-    /xml                                     /etc/libvirt/qemu/
-    /config                                  /mnt/user/appdata/macinabox/
-    /Macinabox/tools/FetchMacOS/BaseSystem   /mnt/user/appdata/macinabox/Basesystem
