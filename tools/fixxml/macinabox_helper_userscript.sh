@@ -18,6 +18,9 @@ REMOVETOPOLOGY="no"
 # set to "unraid" to use the defualt unraid ovmf files
 OVMF="custom"
 
+#########IF YOUR APPDATA SHARE IS NOT IN THE DEFAULT LOCATION THEN CHANGE BELOW)
+appdata=/mnt/user/appdata/
+
 ##### Dont change anything below here #########
 
 ##### Script functions ########################
@@ -142,15 +145,15 @@ fi
 
 installvm() {
 # Install new VM into Unraid if autoinstall was selected in macinabox template
-if [ ! -d /mnt/user/appdata/macinabox/autoinstall/ ]; then
+if [ ! -d $appdata"macinabox/autoinstall/" ]; then
 # Print message and continue on to fix xml
 echo "Starting to Fix XML"	
 else
-virsh define /mnt/user/appdata/macinabox/autoinstall/Macinabox*.xml
+virsh define $appdata"macinabox/autoinstall/Macinabox*.xml"
 echo "VM is now installed. Goto VM tab to run"
 echo "Rerun this script if you make any changes to the macOS VM using the Unraid VM manger"
 #cleanup then exit script
-rm -r /mnt/user/appdata/macinabox/autoinstall
+rm -r $appdata"macinabox/autoinstall"
 exit
 fi
 }
