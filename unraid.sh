@@ -247,7 +247,7 @@ fi
 			echo "I am going to download the BigSur recovery media. Please be patient!"
 		    echo "."
 		    echo "."
-	    "/Macinabox/tools/FetchMacOS/fetch.sh" -v 10.16 -c PublicRelease -p 001-83532 || exit 1;
+	    "/Macinabox/tools/FetchMacOS/fetch.sh" -v 10.16 -c PublicRelease -p 001-86606 || exit 1;
 		
 	else
 		echo "Media already exists. I have already downloaded the Big Sur install media before"
