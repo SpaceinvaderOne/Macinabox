@@ -270,7 +270,7 @@ fi
 		7z e -txar -o/Macinabox/tools/FetchMacOS/BaseSystem/ /Macinabox/tools/FetchMacOS/BaseSystem/InstallAssistant.pkg '*.dmg' 
 		rm /Macinabox/tools/FetchMacOS/BaseSystem/InstallAssistant.pkg
 		7z e -tdmg -o/Macinabox/tools/FetchMacOS/BaseSystem/ /Macinabox/tools/FetchMacOS/BaseSystem/SharedSupport.dmg 5.hfs
-		/Macinabox/tools/FetchMacOS/BaseSystem/SharedSupport.dmg
+		rm /Macinabox/tools/FetchMacOS/BaseSystem/SharedSupport.dmg
 		mkdir /Macinabox/tools/FetchMacOS/BaseSystem/temp
 		mount -t hfsplus -oloop /Macinabox/tools/FetchMacOS/BaseSystem/*.hfs /Macinabox/tools/FetchMacOS/BaseSystem/temp
 		7z e -o/Macinabox/tools/FetchMacOS/BaseSystem/ /Macinabox/tools/FetchMacOS/BaseSystem/temp/*MacSoftwareUpdate/*.zip AssetData/Restore/Base*.dmg
