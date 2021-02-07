@@ -8,7 +8,7 @@ cd "$SCRIPTDIR" || exit
 # Big Sur uses script 2 for method 1
 if [ "$method" = "method 1" ] && [ "$flavour" == "Big Sur" ] ; then		
 # python3 fetch-macos2.py
-python3 fetch-macos.py # temporary use other big sur download method for now
+python3 fetch-macos.py "$@" # temporary use other big sur download method for now
 # others uses script 1 for method 1
 elif [ "$method" = "method 1" ] ; then
 python3 fetch-macos.py "$@"
