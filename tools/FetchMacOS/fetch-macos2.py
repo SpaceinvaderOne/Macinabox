@@ -501,7 +501,7 @@ def main():
     except:
         os_type = "default"
     args = gdata(mlb = product["m"], board_id = product["b"], diagnostics =
-            False, os_type = os_type, verbose=False, basename="", outdir=".")
+            False, os_type = os_type, verbose=False, basename="", outdir="BaseSystem/")
     action_download(args)
 
 
