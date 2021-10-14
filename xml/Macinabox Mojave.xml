@@ -20,17 +20,20 @@
       <loader readonly='yes' type='pflash'>/mnt/user/system/custom_ovmf/Macinabox_CODE-pure-efi.fd</loader>
 	  <nvram>/mnt/user/system/custom_ovmf/Macinabox_VARS-pure-efi.fd</nvram>
   </os>
-  <features>
+ <features>
     <acpi/>
     <apic/>
+    <kvm>
+      <hidden state='on'/>
+    </kvm>
   </features>
   <cpu mode='host-passthrough' check='none'>
-    <topology sockets='1' cores='2' threads='1'/>
+    <topology sockets='1' dies='1' cores='1' threads='2'/>
   </cpu>
-  <clock offset='utc'>
+  <clock offset='localtime'>
     <timer name='rtc' tickpolicy='catchup'/>
     <timer name='pit' tickpolicy='delay'/>
-    <timer name='hpet' present='no'/>
+    <timer name='hpet' present='yes'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -140,6 +143,6 @@
     <qemu:arg value='-smbios'/>
     <qemu:arg value='type=2'/>
     <qemu:arg value='-cpu'/>
-    <qemu:arg value='Penryn,kvm=on,vendor=GenuineIntel,+invtsc,vmware-cpuid-freq=on,+pcid,+ssse3,+sse4.2,+popcnt,+avx,+aes,+xsave,+xsaveopt,check'/>
+    <qemu:arg value='host,vendor=GenuineIntel,+invtsc,kvm=on'/>
   </qemu:commandline>
 </domain>
