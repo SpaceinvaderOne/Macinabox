@@ -13,8 +13,8 @@ RUN apk add \
     apk add openssh-askpass --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ \
     && rm -rf /var/cache/apk/* /tmp/* /tmp/.[!.]*
 
-# Download virt-manager from git
-RUN git clone https://github.com/virt-manager/virt-manager.git
+# Download virt-manager from git and switch to release 3.2.0
+RUN git clone https://github.com/virt-manager/virt-manager.git && cd virt-manager && git checkout ddc55c8
 
 # Install virt-manager with script from developer
 RUN cd virt-manager && ./setup.py configure --prefix=/usr/local && ./setup.py install --exec-prefix=/usr/local
