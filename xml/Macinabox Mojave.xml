@@ -39,7 +39,7 @@
     <emulator>/usr/local/sbin/qemu</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='writeback'/>
-      <source file='YYYYMojave-opencore.img'/>
+      <source file='XXXXMacinabox Mojave/Mojave-opencore.img'/>
       <target dev='hdc' bus='sata'/>
       <boot order='1'/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
@@ -51,7 +51,7 @@
       <address type='drive' controller='0' bus='0' target='0' unit='3'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='raw' cache='writeback'/>
+      <driver name='qemu' type='ZZZZ' cache='writeback'/>
       <source file='XXXXMacinabox Mojave/macos_disk.img'/>
       <target dev='hde' bus='sata'/>
       <address type='drive' controller='0' bus='0' target='0' unit='4'/>
@@ -100,8 +100,8 @@
     </controller>
     <interface type='bridge'>
       <source bridge='br0'/>
-      <model type='vmxnet3'/>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+      <model type='WWWW'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x00' function='0x0'/>
     </interface>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
@@ -127,9 +127,7 @@
       <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </video>
-    <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
-    </memballoon>
+    <memballoon model='none'/>
   </devices>
   <qemu:commandline>
     <qemu:arg value='-usb'/>

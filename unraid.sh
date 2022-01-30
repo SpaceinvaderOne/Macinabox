@@ -10,13 +10,13 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Chooses whether a full or preparation install  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
+umask 0000
 automanual() {
 		
 if [ "$vminstall" == "Auto install" ] ; then # check if template set to auto install
 	echo "."
 	echo "."
-	autoinstall #run function autoinstall
+	vdisktype #run function to install either qcow2 or raw vdisk
 	print_result_autoinstall #print results
 elif [ "$vminstall" == "Manual install" ] ; then # check if template set to manual install
     echo " Manual install starting"
@@ -28,13 +28,34 @@ else
 	echo "I dont know what type of install you want me to do? Is your template correct?"
 fi
 }
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# #  Auto install Function - Creates ready to run the macOS installer, OpenCore, vdisk  and vm definition in defualt domains share # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Selects if vdisk choosen is qcow2 or raw  # #  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
 
 
-autoinstall() {
+vdisktype() {
+
+#if vdisk was set as qcow2 then run autoinstall using qcow2 vdisk type
+if [ "$vdisktype" == "qcow2" ] ; then
+	autoinstall_qcow2
+				
+#if vdisk was not set as qcow2 then run autoinstall using raw vdisk
+#set vdisk type to raw in case docker template is old and doest have vdisk type option
+else
+	vdisktype="raw"
+	autoinstall_raw
+				
+fi		
+
+}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Auto install raw vdisk Function - Creates ready to run the macOS installer, OpenCore, vdisk  and vm definition in defualt domains share # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
+
+
+autoinstall_raw() {
 	mkdir -vp /config/autoinstall/ # create folder for vm xml generation
 	#check there is a folder in the domains share named the version of the macOS being installed. If not create it
 	if [ ! -d "$DOMAIN" ] ; then
@@ -74,16 +95,61 @@ autoinstall() {
  chmod -R 777 "$DOMAIN"/ # reset permissions
 }
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Auto install qcow2 vdisk Function - Creates ready to run the macOS installer, OpenCore, vdisk  and vm definition in defualt domains share # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
+
+
+autoinstall_qcow2() {
+	mkdir -vp /config/autoinstall/ # create folder for vm xml generation
+	#check there is a folder in the domains share named the version of the macOS being installed. If not create it
+	if [ ! -d "$DOMAIN" ] ; then
+		
+				mkdir -vp "$DOMAIN"
+				echo "I have created the Macinabox directories"
+			    echo "."
+			    echo "."
+			#if it was already present continue and print message
+			else
+				echo "  Macinabox directories are already present......continuing."
+			    echo "."
+			    echo "."
+			
+				fi		
+
+    # check if a vdisk is present to install macOS on. If not create one
+    if [ ! -e "$DOMAIN"/macos_disk.img ]; then
+	
+			qemu-img create -f qcow2 "$DOMAIN"/macos_disk.img "$vdisksize"
+			echo "."
+			echo "Created vdisk"
+			echo "."
+			echo "."
+        #if it was already present continue and print message
+		else
+			echo "There is already a vdisk  image here...skipping"
+			echo "."
+			echo "."
+			SKIPVDISK=yes
+
+			fi
+ makeimg #convert dmg and put in iso share			
+ makeopencore #extract and move Opencore to isos share
+ addxml
+ fixxml
+ chmod -R 777 "$DOMAIN"/ # reset permissions
+}
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Manual install Function - Creates macOS installer & bootload puts in isos share. Puts other files needed for vm in appdata folder # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-manualinstall() {
-			
+manualinstall() {		
 	makeimg #convert dmg and put in iso share
+	opencorelocation="$ISOIMAGES"
     makeopencore #extract and move Opencore to isos share
 	fixxml
-	chmod -R 777 /config2/ #reset permissions on macinabox folder in appdata	
+	chmod -R 777 /config/ #reset permissions on macinabox folder in appdata	
 
 }
 
@@ -94,62 +160,153 @@ manualinstall() {
 makeimg() {
 # check if install image has previously been created and if not convert baseimage and put in iso share
 if [ ! -e /isos/"$NAME"-install.img ] ; then
-dmg2img "/Macinabox/tools/FetchMacOS/BaseSystem/BaseSystem.dmg" "/isos/$NAME-install.img"
-touch /config2/install_media_is_in_isos_share # make a file showing user where install media is located
+qemu-img convert "/config/baseimage_temp/BaseSystem.dmg" -O raw "/isos/$NAME-install.img"
+touch /config/install_media_is_in_isos_share # make a file showing user where install media is located
 chmod 777 "/isos/$NAME-install.img"
 #cleanup - remove baseimage from macinabox appdata now its been converted and moved
-rm -r /Macinabox/tools/FetchMacOS/BaseSystem/*
+rm /config/baseimage_temp/BaseSystem.dmg
+rm /config/baseimage_temp/BaseSystem.chunklist
 else
 SKIPIMG=yes
 fi
 }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Extract and move Opencore to the iso share   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Extract and move stock Opencore to the vm share   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-makeopencore() {
-    # check if Opencore is already present if not extract and move to isos share
-	if [ ! -e /isos/"$NAME"-opencore.img ] ; then
-		echo "Putting open core in the isos share"
+makeopencorestock() {
+	# check if Opencore is already present if not extract and move to isos share
+	    
+	if [ ! -e "$DOMAIN"/"$NAME"-opencore.img ] ; then
+		echo "Putting stock open core in the vm share"
 
-		rsync -a --no-o /Macinabox/bootloader/ /config2 #put opencore zip in mac appdata
-		unzip -d /config2/ /config2/OpenCore.img.zip #extract opencore to usable .img file
-		rsync -a --no-o /config2/OpenCore.img /isos/"$NAME"-opencore.img # Move opencore to isos share
-		chmod 777 /isos/"$NAME"-opencore.img #reset permissions on opencore image
-		touch /config2/opencore_is_in_isos_share # make a file showing user where Opencore is located
-		rm /config2/OpenCore.img.zip && rm /config2/OpenCore.img #cleanup - delete temp opencore files now its been extracted and moved
+		unzip -d /config/ /Macinabox/bootloader/OpenCore*.img.zip #extract opencore to usable .img file
+		rsync -a --no-o /config/OpenCore*.img "$opencorelocation"/"$NAME"-opencore.img  # Move opencore to vm share for auto install or iso share for manual
+		chmod 777 "$opencorelocation"/"$NAME"-opencore.img  #reset permissions on opencore image
+		touch /config/opencore_is_in_vms_share # make a file showing user where Opencore is located
+		rm /config/OpenCore*.img #cleanup 
+		
+
+				
 else
 	# if opencore was already present skip and print message
-	echo "$NAME-opencore.img already exists. If you want me to replace you will need to manually delete it first"
+	echo "$NAME-opencore.img already exists. If you want me to replace you will need set 'replaceopencore' to yes in the template"
     echo "."
     echo "."
 
 fi
 }
 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #  Extract and move custom Opencore to the vm share   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+makeopencorecustom() {
+	
+	if [ ! -d /config/custom_opencore ] ; then
+		mkdir -vp /config/custom_opencore && cp /Macinabox/custom_opencore/readme.txt /config/custom_opencore/readme.txt
+	fi
+	
+	# check if Opencore is already present if not extract and move to isos share
+	    
+	if [ ! -e "$DOMAIN"/"$NAME"-opencore.img ] ; then
+	
+	
+	# check if custom Opencore is present  
+	for file in /config/custom_opencore/*.gz
+	do	    
+	if [  -e "$file" ]; then 
+		echo "extracting custom Opencore"
+		gunzip -dk /config/custom_opencore/ /config/custom_opencore/*.gz #extract opencore
+		echo "Putting custom Opencore in the vm share"
+			rsync -a --no-o /config/custom_opencore/*.iso "$DOMAIN"/"$NAME"-opencore.img # Move custom opencore to vm share
+			chmod 777 "$DOMAIN"/"$NAME"-opencore.img #reset permissions on opencore image
+			rm /config/custom_opencore/*.iso #cleanup
+		
+		else
+				echo "No custom Opencore present in /appdata/macinabox/custom_opecore I will continue and use stock version"
+			makeopencorestock  # if no custom Opencore available then use stock
+		fi
+
+	done
+else
+	# if opencore was already present skip and print message
+	echo "$NAME-opencore.img already exists. If you want me to replace you will need set 'replaceopencore' to yes in the template"
+    echo "."
+    echo "."
+
+fi
+
+
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # Use stock or custom opencore  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+makeopencore() {
+	    
+	if [ "$opencore" == "custom" ] ; then 
+		makeopencorecustom
+		else
+		makeopencorestock
+	fi
+
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #  Fuction to delete and replace opencore from macinabox container # #  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  # # # # # 
+
+
+replaceopencore() {
+
+#if container set to replace opencore will delete vms opencore and replace with fresh opencore  then exit
+opencorelocation="$DOMAIN"	
+	
+	if [ "$replaceopencore" == "yes" ] ; then
+		echo "deleting existing opencore"
+		rm "$DOMAIN"/"$NAME"-opencore.img
+		makeopencore
+		echo ""
+		echo ""
+		echo "Macinabox set to only replace Opencore. Nothing else done."
+		echo "To install a macOS vm re-run container, change 'replace opencore' to no in the template"
+		exit 
+	
+	else
+				
+		echo "continuing"
+			   
+	fi		
+
+}
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Try to directly inject macinabox helper userscript     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 fixxml() {
     
-	rsync -a --no-o /Macinabox/tools/fixxml/ /config2/ # copy macinabox helper data to macinabox appdata
-		
+	rsync -a --no-o /Macinabox/tools/fixxml/ /config/ # copy macinabox helper data to macinabox appdata
+	
 if [ "$injectfixxml" == "yes" ] && [ ! -e /userscripts/1_macinabox_helper ]; then
 		echo "Trying to add userscript"
 
-		unzip -d /userscripts/ /config2/1_macinabox_helper.zip #extract macinabox helper userscript into userscript location
-		unzip -d /userscripts/ /config2/1_macinabox_vmready_notify.zip #extract macinabox notify userscript into userscript location
-		rm /config2/1_macinabox_helper.zip #cleanup delete zip file
-		rm /config2/1_macinabox_vmready_notify.zip #cleanup delete zip file
-		chmod -R 777 "/userscripts/1_macinabox_helper/" && chmod 777 /config2/macinabox_helper_userscript.sh #reset permissions on user script
-		chmod -R 777 "/userscripts/1_macinabox_vmready_notify/" && chmod 777 /config2/macinabox_vmready_notify.sh #reset permissions on user script
+		unzip -d /userscripts/ /config/1_macinabox_helper.zip #extract macinabox helper userscript into userscript location
+		unzip -d /userscripts/ /config/1_macinabox_vmready_notify.zip #extract macinabox notify userscript into userscript location
+		rm /config/1_macinabox_helper.zip #cleanup delete zip file
+		rm /config/1_macinabox_vmready_notify.zip #cleanup delete zip file
+		chmod -R 777 "/userscripts/1_macinabox_helper/" && chmod 777 /config/macinabox_helper_userscript.sh #reset permissions on user script
+		chmod -R 777 "/userscripts/1_macinabox_vmready_notify/" && chmod 777 /config/macinabox_vmready_notify.sh #reset permissions on user script
 		echo "Injected macinabox helper and notify userscript into user script plugins and a copy of macinabox helper and notify script has been put in appdata"			
 else
 	# leave userscript in macinabox appdata & delete zip file
-	rm /config2/1_macinabox_helper.zip #cleanup delete zip file
-	rm /config2/1_macinabox_vmready_notify.zip #cleanup delete zip file
-	chmod 777 /config2/macinabox_helper_userscript.sh #reset permissions on user script
-	chmod 777 /config2/macinabox_vmready_notify.sh #reset permissions on user script
+	rm /config/1_macinabox_helper.zip #cleanup delete zip file
+	rm /config/1_macinabox_vmready_notify.zip #cleanup delete zip file
+	chmod 777 /config/macinabox_helper_userscript.sh #reset permissions on user script
+	chmod 777 /config/macinabox_vmready_notify.sh #reset permissions on user script
 	echo "A copy of macinabox helper and notify script has been put in appdata"
 
 fi
@@ -165,14 +322,30 @@ if [ ! -e /customovmf/Macinabox_CODE-pure-efi.fd ] ; then
 	chmod -R 777 /customovmf/
 fi
 
+if [ "$overridenic" == "virtio" ] ; then
+	nictype="virtio"
+elif [ "$overridenic" == "e1000-82545em" ] ; then
+		nictype="e1000-82545em"
+elif [ "$overridenic" == "virtio-net" ] ; then
+			nictype="virtio-net"
+elif [ "$overridenic" == "vmxnet3" ] ; then
+				nictype="vmxnet3"	
+	else
+		echo "Going with the default nic type for the macOS vm"
+	fi
+
 if [ ! -e /config/autoinstall/"$XML".xml ] ; then
-	sed "s?XXXX?$VMIMAGES?" </Macinabox/xml/"$XML".xml >/tmp/tempxml.xml
-	sed "s?YYYY?$ISOIMAGES?" </tmp/tempxml.xml > /config/autoinstall/"$XML".xml
+	sed "s?XXXX?$VMIMAGES?" </Macinabox/xml/"$XML".xml > /tmp/tempxml.xml
+	sed "s?YYYY?$ISOIMAGES?" </tmp/tempxml.xml > /tmp/tempxml2.xml
+	sed "s?ZZZZ?$vdisktype?" </tmp/tempxml2.xml > /tmp/tempxml3.xml
+	sed "s?WWWW?$nictype?" </tmp/tempxml3.xml > /config/autoinstall/"$XML".xml
+	
 	chmod 777 /config/autoinstall/"$XML".xml
+	rm /tmp/tempxml.xml && rm /tmp/tempxml2.xml && rm /tmp/tempxml3.xml
 	echo "macOS VM template generated and moved to server (You need to run macinabox_helper userscript)"
 	echo "."
 	echo "."
-	rsync -a --no-o /config/autoinstall/"$XML".xml /config2/"$XML"_original.xml #put an original backup of xml file in macinabox appdata
+	rsync -a --no-o /config/autoinstall/"$XML".xml /config/"$XML"_original.xml #put an original backup of xml file in macinabox appdata
 
 else
 	echo "vmacOS VM template was already present. Please manually delete it, if you want me to replace it"
@@ -191,7 +364,7 @@ pullhsierra() {
 		echo "I am going to download the HighSierra recovery media. Please be patient!"
 	    echo "."
 	    echo "."
-    "/Macinabox/tools/FetchMacOS/fetch.sh" -v 10.13 -k BaseSystem || exit 1;
+    "/Macinabox/tools/FetchMacOS/fetch-macOS-v2.py" -s high-sierra || exit 1;
 else
 	echo "Media already exists. I have already downloaded the High Sierra install media before"
     echo "."
@@ -209,7 +382,7 @@ pullmojave() {
 		echo "I am going to download the Mojave recovery media. Please be patient!"
 	    echo "."
 	    echo "."
-         "/Macinabox/tools/FetchMacOS/fetch.sh" -v 10.14 -k BaseSystem || exit 1;
+         "/Macinabox/tools/FetchMacOS/fetch-macOS-v2.py" -s mojave || exit 1;
 else
 	echo "Media already exists. I have already downloaded the Mojave install media before"
     echo "."
@@ -228,7 +401,7 @@ fi
 			echo "I am going to download the Catalina recovery media. Please be patient!"
 		    echo "."
 		    echo "."
-	    "/Macinabox/tools/FetchMacOS/fetch.sh" -v 10.15 -k BaseSystem || exit 1;
+	    "/Macinabox/tools/FetchMacOS/fetch-macOS-v2.py" -s catalina || exit 1;
 	else
 		echo "Media already exists. I have already downloaded the Catalina install media before"
 	    echo "."
@@ -247,7 +420,7 @@ fi
 			echo "I am going to download the BigSur recovery media. Please be patient!"
 		    echo "."
 		    echo "."
-	    "/Macinabox/tools/FetchMacOS/fetch.sh" -v 10.16 -c PublicRelease -p 071-00696 || exit 1;
+	    "/Macinabox/tools/FetchMacOS/fetch-macOS-v2.py" -s big-sur || exit 1;
 		
 	else
 		echo "Media already exists. I have already downloaded the Big Sur install media before"
@@ -257,26 +430,27 @@ fi
 	fi
 	
 	}
-	
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# #  Extract BigSur from InstallAssistant.pkg if using script1    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-			
+# #  Pull Monterey if not already downloaded    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 	
 	
-	extractbigsur() {
-		if [ "$method" = "method 1" ] ; then
-		echo " Nothing to extract using method 1"
+		pullmonterey() {
+
+			if [ ! -e /isos/Monterey-install.img ] ; then
+				echo "I am going to download the Monterey recovery media. Please be patient!"
+			    echo "."
+			    echo "."
+		    python3 "/Macinabox/tools/FetchMacOS/fetch-macOS-v2.py" -s monterey || exit 1;
+		
 		else
-		7z e -txar -o/Macinabox/tools/FetchMacOS/BaseSystem/ /Macinabox/tools/FetchMacOS/BaseSystem/InstallAssistant.pkg '*.dmg' 
-		rm /Macinabox/tools/FetchMacOS/BaseSystem/InstallAssistant.pkg
-		7z e -tdmg -o/Macinabox/tools/FetchMacOS/BaseSystem/ /Macinabox/tools/FetchMacOS/BaseSystem/SharedSupport.dmg 5.hfs
-		rm /Macinabox/tools/FetchMacOS/BaseSystem/SharedSupport.dmg
-		mkdir /Macinabox/tools/FetchMacOS/BaseSystem/temp
-		mount -t hfsplus -oloop /Macinabox/tools/FetchMacOS/BaseSystem/*.hfs /Macinabox/tools/FetchMacOS/BaseSystem/temp
-		7z e -o/Macinabox/tools/FetchMacOS/BaseSystem/ /Macinabox/tools/FetchMacOS/BaseSystem/temp/*MacSoftwareUpdate/*.zip AssetData/Restore/Base*.dmg
-		umount /Macinabox/tools/FetchMacOS/BaseSystem/temp && rm -r /Macinabox/tools/FetchMacOS/BaseSystem/temp && rm /Macinabox/tools/FetchMacOS/BaseSystem/*.hfs
-		fi		
-	}		
+			echo "Media already exists. I have already downloaded the Monterey install media before"
+		    echo "."
+		    echo "."
+
+		fi
+	
+		}
+		
 						
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #  Print result Function - Prints info where all files went                                                     # # # # # # # # # # # # # # # # #  
@@ -303,18 +477,18 @@ fi
 		if [ "$SKIPVDISK" = "yes" ] ; then
     echo "Vdisk was already present"
 else
-	echo "A  Vdisk of "$vdisksize" was created in "$DOMAIN" "
+	echo "A  Vdisk of $vdisksize was created in $DOMAIN "
 fi
     echo "."
     echo "."
-    echo "OpenCore bootloader image was put in your Unraid isos share named"$NAME"-opencore.img"
+    echo "OpenCore bootloader image named $NAME-opencore.img was put in your Unraid vm share in the folder named $NAME"
     echo "."
 	echo "."
     echo "Custom ovmf files are in /mnt/user/system/custom_ovmf"
 	echo "."
 	echo "."
 	if [ "$SKIPXML" = "yes" ] ; then
-		echo "An XML file was already present for Macinabox"$NAME" you will need to manually delete if you want me to replace this"
+		echo "An XML file was already present for Macinabox $NAME you will need to manually delete if you want me to replace this"
 else
 	echo "XML template file for the vm is ready for install with macinabox helper user script."
 	echo "Note  This file assumes your vm share is the default location /mnt/user/domains"
@@ -323,14 +497,13 @@ fi
 
 if [ "$injextfixxml" = "yes" ] ; then
     echo "The fix script should be in the userscripts plugin now"
-	echo "But you will also find a copy of the custom xml fix script in /mnt/user/appdata/macinabox/macinabox"
+	echo "But you will also find a copy of the custom xml fix script in /mnt/user/appdata/macinabox"
 else
-	echo "A copy of the macinabox helper user script was placed in /mnt/user/appdata/macinabox/macinabox"
+	echo "A copy of the macinabox helper user script was placed in /mnt/user/appdata/macinabox"
 fi
 	echo "."
 	echo "."
 	echo "OK process is now complete "
-    echo "Now you must stop and start the array. The vm will be visible in the Unraid VM manager"
 				
 }
 
@@ -340,13 +513,13 @@ print_result_manualinstall() {
     echo "."
     echo "."
     echo "MacOS install media was put in your Unraid isos share named $NAME-install.img"
-	echo "OpenCore bootloader image was put in your Unraid isos share named "$NAME"-opencore.img"
+	echo "OpenCore bootloader image was put in your Unraid isos share named $NAME-opencore.img"
 	
 if [ "$injextfixxml" = "yes" ] ; then
     echo "The macinabox helper script should be in the userscripts plugin now"
-	echo "But you will also find a copy of the macinabox helper script in /mnt/user/appdata/macinabox/macinabox"
+	echo "But you will also find a copy of the macinabox helper script in /mnt/user/appdata/macinabox"
 else
-	echo "The macinabox helper script was placed in /mnt/user/appdata/macinabox/macinabox"
+	echo "The macinabox helper script was placed in /mnt/user/appdata/macinabox"
 fi
 	
 	echo ""
@@ -368,30 +541,47 @@ error() {
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
+mkdir -vp /config/baseimage_temp
 		
 if [ "$flavour" == "Catalina" ] ; then
 	XML="Macinabox Catalina"
+	nictype="e1000-82545em"
 	NAME="Catalina"
 	DOMAIN=/domains/"$XML"
+	replaceopencore
 	pullcatalina
 	automanual
 elif [ "$flavour" == "Big Sur" ] ; then	
     XML="Macinabox BigSur"
+	nictype="virtio"
 	NAME="BigSur"
 	DOMAIN=/domains/"$XML"
-	pullbigsur && extractbigsur
+	replaceopencore
+	pullbigsur
     automanual
 elif [ "$flavour" == "Mojave" ] ; then
 	XML="Macinabox Mojave"
+	nictype="e1000-82545em"
 	NAME="Mojave"
 	DOMAIN=/domains/"$XML"
+	replaceopencore
 	pullmojave
 	automanual
 elif [ "$flavour" == "High Sierra" ] ; then
 	XML="Macinabox HighSierra"
+	nictype="e1000-82545em"
 	NAME="HighSierra"
 	DOMAIN=/domains/"$XML"
+	replaceopencore
 	pullhsierra
+	automanual	
+elif [ "$flavour" == "Monterey" ] ; then
+	XML="Macinabox Monterey"
+	nictype="virtio"
+	NAME="Monterey"
+	DOMAIN=/domains/"$XML"
+	replaceopencore
+	pullmonterey
 	automanual				
 else
 	echo "I dont know what OS to try and download? Is your template correct?"

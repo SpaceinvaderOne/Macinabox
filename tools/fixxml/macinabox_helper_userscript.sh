@@ -5,10 +5,8 @@
 # vm name (put the name of the vm as defined in your template)
 NAME="put the name of the vm from template here"
 
-# leave as "no" when you are running this script after you have sucessfully installed the OS.
-#  The setting "no" will then change the network type to intel to allow apple services
-#  Only set to "yes" if you have NOT completed the install process. This will set network to the needed vmxnet3 to do this.
-FIRSTINSTALL="yes"
+#Is your mac vm Big sur or newer  (needed to know which nic type should be present) Set either "yes" or "no"
+MacTypeNew="yes"
 
 # leave set to "no" when your core count is standard
 # set to "yes" if boot hangs on the apple logo due to you assigned a non standard amount of cores to the vm
@@ -18,39 +16,15 @@ REMOVETOPOLOGY="no"
 # set to "unraid" to use the defualt unraid ovmf files
 OVMF="custom"
 
-#########IF YOUR APPDATA SHARE IS NOT IN THE DEFAULT LOCATION THEN CHANGE BELOW)
-appdata=/mnt/user/appdata/
+#########IF YOUR APPDATA SHARE IS NOT IN THE DEFAULT LOCATION THEN CHANGE BELOW
+appdata="/mnt/user/appdata/"
 
 ##### Dont change anything below here #########
 
 ##### Script functions ########################
 
-fixnetworkpreinstall() {	
-# look for network type and change  type to vmxnet3 to allow macOS to be able to install
-if grep -q "<model type='virtio'/>" /tmp/"$XML".xml; then
-	sed "s_<model type='virtio'/>_<model type='vmxnet3'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
-	echo "Changed network type from virtio to vmxnet3."
-	NETWORK="vmxnet3"
-	DEFINEVM="yes"
-elif grep -q "<model type='virtio-net'/>" /tmp/"$XML".xml; then
-	sed "s_<model type='virtio-net'/>_<model type='vmxnet3'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
-	echo "Changed network type from virtio to vmxnet3."
-	NETWORK="vmxnet3"
-	DEFINEVM="yes"
-elif grep -q "<model type='e1000-82545em'/>" /tmp/"$XML".xml; then
-	sed "s_<model type='virtio-net'/>_<model type='vmxnet3'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
-	echo "Changed network type from e1000-82545em to vmxnet3."
-	NETWORK="vmxnet3"
-	DEFINEVM="yes"
-else
-	echo "No network adapters in xml to change. Network adapter is already vmxnet3"
-	cp /tmp/"$XML".xml /tmp/"$XML"2.xml
-	NETWORK="skip"
-fi
-}
 
-
-fixnetworkpostinstall() {
+fixnetworkintel() {
 # look for network type and change to correct type for macOS e1000-82545em
 if grep -q "<model type='virtio'/>" /tmp/"$XML".xml; then
 	sed "s_<model type='virtio'/>_<model type='e1000-82545em'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
@@ -64,17 +38,40 @@ elif grep -q "<model type='virtio-net'/>" /tmp/"$XML".xml; then
 	NETWORK="e1000-82545em"
 	DEFINEVM="yes"
 
-# swap vmxnet3 after install. (vmxnet3 is only used for install of macOS after e1000 is needed to be able to use Apple services)
 elif grep -q "<model type='vmxnet3'/>" /tmp/"$XML".xml; then 
 	sed "s_<model type='vmxnet3'/>_<model type='e1000-82545em'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
 	echo "Changed network type from vmxnet3 to intel e1000-82545em"
 	NETWORK="e1000-82545em"
 	DEFINEVM="yes"
 else	
-	echo "No network adapters in xml to change.. Network adapter is already e1000-82545em"
+	echo "No network adapters in xml to change..... Network adapter is already e1000-82545em"
 	cp /tmp/"$XML".xml /tmp/"$XML"2.xml
 	NETWORK="skip"
 	
+fi
+}
+
+fixnetworkvirtio() {
+# look for network type and change to correct type for macOS version BigSur and higher to virtio
+if grep -q "<model type='vmxnet3'/>" /tmp/"$XML".xml; then
+	sed "s_<model type='vmxnet3'/>_<model type='virtio'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
+	echo "Changed network type from vmxnet3 to virtio."
+	NETWORK="virtio"
+	DEFINEVM="yes"
+elif grep -q "<model type='virtio-net'/>" /tmp/"$XML".xml; then
+	sed "s_<model type='virtio-net'/>_<model type='virtio'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
+	echo "Changed network type from virtio-net to virtio."
+	NETWORK="virtio"
+	DEFINEVM="yes"
+elif grep -q "<model type='e1000-82545em'/>" /tmp/"$XML".xml; then
+	sed "s_<model type='e1000-82545em'/>_<model type='virtio'/>_" </tmp/"$XML".xml >/tmp/"$XML"2.xml
+	echo "Changed network type from e1000-82545em to virtio."
+	NETWORK="virtio"
+	DEFINEVM="yes"
+else
+	echo "No network adapters in xml to change. Network adapter is already virtio"
+	cp /tmp/"$XML".xml /tmp/"$XML"2.xml
+	NETWORK="skip"
 fi
 }
 
@@ -97,7 +94,7 @@ echo "<qemu:arg value='isa-applesmc,osk=ourhardworkbythesewordsguardedpleasedont
 echo "<qemu:arg value='-smbios'/>" | tee --append /tmp/"$XML"4.xml
 echo "<qemu:arg value='type=2'/>" | tee --append /tmp/"$XML"4.xml
 echo "<qemu:arg value='-cpu'/>" | tee --append /tmp/"$XML"4.xml
-echo "<qemu:arg value='Penryn,kvm=on,vendor=GenuineIntel,+invtsc,vmware-cpuid-freq=on,+pcid,+ssse3,+sse4.2,+popcnt,+avx,+aes,+xsave,+xsaveopt,check'/>" | tee --append /tmp/"$XML"4.xml
+echo "<qemu:arg value='Penryn,kvm=on,vendor=GenuineIntel,+kvm_pv_unhalt,+kvm_pv_eoi,+hypervisor,+invtsc,+pcid,+ssse3,+sse4.2,+popcnt,+avx,+avx2,+aes,+fma,+fma4,+bmi1,+bmi2,+xsave,+xsaveopt,+rdrand,check'/>" | tee --append /tmp/"$XML"4.xml
 echo "</qemu:commandline>" | tee --append /tmp/"$XML"4.xml
 echo "</domain>" | tee --append /tmp/"$XML"4.xml
 echo "Added custom qemu:args for macOS"
@@ -149,7 +146,7 @@ if [ ! -d $appdata"macinabox/autoinstall/" ]; then
 # Print message and continue on to fix xml
 echo "Starting to Fix XML"	
 else
-virsh define $appdata"macinabox/autoinstall/Macinabox*.xml"
+virsh define $appdata"macinabox/autoinstall/"Macinabox*.xml
 echo "VM is now installed. Goto VM tab to run"
 echo "Rerun this script if you make any changes to the macOS VM using the Unraid VM manger"
 #cleanup then exit script
@@ -224,11 +221,11 @@ installvm
 XML="$NAME"
 virsh dumpxml "$NAME" > /tmp/"$XML".xml
 
-#check if firstinstall set to yes or no then run fixnetwork type function
-if [ "$FIRSTINSTALL" = "yes" ] ; then
-	fixnetworkpreinstall
-elif [ "$FIRSTINSTALL" = "no" ] ; then	
-	fixnetworkpostinstall
+#check if big sur or newer and run correct nic function
+if [ "$MacTypeNew" = "no" ] ; then
+	fixnetworkintel
+elif [ "$MacTypeNew" = "yes" ] ; then	
+	fixnetworkvirtio
 else 
 	echo "FIRSTINSTALL VARIABLE NOT SET CORRECTLY"
 	exit 1

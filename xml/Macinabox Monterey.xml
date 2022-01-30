@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+  <name>Macinabox Monterey</name>
+  <description>MacOS Monterey</description>
+  <metadata>
+   <vmtemplate xmlns="unraid" name="Windows 10" icon="Monterey.png" os="osx"/>
+  </metadata>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <memoryBacking>
+    <nosharepages/>
+  </memoryBacking>
+  <vcpu placement='static'>2</vcpu>
+  <cputune>
+    <vcpupin vcpu='0' cpuset='0'/>
+    <vcpupin vcpu='1' cpuset='1'/>
+  </cputune>
+  <os>
+      <type arch='x86_64' machine='pc-q35-4.2'>hvm</type>
+      <loader readonly='yes' type='pflash'>/mnt/user/system/custom_ovmf/Macinabox_CODE-pure-efi.fd</loader>
+      <nvram>/mnt/user/system/custom_ovmf/Macinabox_VARS-pure-efi.fd</nvram>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <cpu mode='host-passthrough' check='none'>
+    <topology sockets='1' cores='2' threads='1'/>
+  </cpu>
+  <clock offset='utc'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/local/sbin/qemu</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw' cache='writeback'/>
+      <source file='XXXXMacinabox Monterey/Monterey-opencore.img'/>
+      <target dev='hdc' bus='sata'/>
+      <boot order='1'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw' cache='writeback'/>
+      <source file='YYYYMonterey-install.img'/>
+      <target dev='hdd' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='3'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='ZZZZ' cache='writeback'/>
+      <source file='XXXXMacinabox Monterey/macos_disk.img'/>
+      <target dev='hde' bus='virtio'/>
+     <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </disk>
+    <controller type='usb' index='0' model='ich9-ehci1'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x7'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci1'>
+      <master startport='0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <master startport='2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x1'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci3'>
+      <master startport='4'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x2'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='1' port='0x10'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='2' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='2' port='0x11'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x1'/>
+    </controller>
+    <controller type='pci' index='3' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='3' port='0x12'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x2'/>
+    </controller>
+    <controller type='pci' index='4' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='4' port='0x13'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x3'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+    </controller>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <model type='WWWW'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x00' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='unix'>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <input type='tablet' bus='usb'>
+      <address type='usb' bus='0' port='1'/>
+    </input>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' websocket='-1' listen='0.0.0.0' keymap='en-us'>
+      <listen type='address' address='0.0.0.0'/>
+    </graphics>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </video>
+  <memballoon model='none'/>
+  </devices>
+  <qemu:commandline>
+    <qemu:arg value='-usb'/>
+    <qemu:arg value='-device'/>
+    <qemu:arg value='usb-kbd,bus=usb-bus.0'/>
+    <qemu:arg value='-device'/>
+    <qemu:arg value='isa-applesmc,osk=ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc'/>
+    <qemu:arg value='-smbios'/>
+    <qemu:arg value='type=2'/>
+    <qemu:arg value='-cpu'/>
+    <qemu:arg value='Penryn,kvm=on,vendor=GenuineIntel,+kvm_pv_unhalt,+kvm_pv_eoi,+hypervisor,+invtsc,+pcid,+ssse3,+sse4.2,+popcnt,+avx,+avx2,+aes,+fma,+fma4,+bmi1,+bmi2,+xsave,+xsaveopt,+rdrand,check'/>
+  </qemu:commandline>
+</domain>
