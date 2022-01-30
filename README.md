@@ -8,7 +8,7 @@ Also needed are
 You need to have the "User Scripts" plugin installed from Unraid Community applications
 Optional for the correct icons for macOS, please install  "vm_custom_icons" container from Unraid Community applications
  
-#### Usage
+Usage
 ## Operating System Version:  
                 Choose version from below
 				Big Sur (default)
@@ -17,9 +17,9 @@ Optional for the correct icons for macOS, please install  "vm_custom_icons" cont
  				Mojave
  				High Sierra
 				
-## VM Images Location:      Location of your vm share ( default /mnt/user/domains/ )
+ VM Images Location:      Location of your vm share ( default /mnt/user/domains/ )
 
-## Install Type: 		
+ Install Type: 		
                 Auto install  # (This will download MacOS and install needed files into your VM location.)
  
             	Manual- install # (This will download MacOS and put all needed files into correct place ready for easy manual install.)
