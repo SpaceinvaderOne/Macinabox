@@ -13,7 +13,7 @@ You need to have the "User Scripts" plugin installed from Unraid Community appli
 Optional for the correct icons for macOS, please install  "vm_custom_icons" container from Unraid Community applications
  
  
-Usage
+Usage  (settings changed in Unraid template)
 Operating System Version:  
                        Choose version from below
 				Big Sur (default)
@@ -25,9 +25,8 @@ Operating System Version:
  VM Images Location:      Location of your vm share ( default /mnt/user/domains/ )
 
  Install Type: 		
-                Auto install  # (This will download MacOS and install needed files into your VM location.)
- 
-            	Manual- install # (This will download MacOS and put all needed files into correct place ready for easy manual install.)
+   Auto install  # (This will download MacOS and install needed files into your VM location.)
+   Manual- install # (This will download MacOS and put all needed files into correct place ready for easy manual install.)
  
 Vdisk size :   The size you want your vdisk to be created
 
@@ -42,9 +41,9 @@ Override defualt NIC type:  Default No -  Override the default nic type in the v
 VM Images Location:  You only need to change if your VM images are not in the default location /mnt/user/domains
 
 VM Images Location AGAIN:  Only needs changing if you changed the above. Location must match the above.
-
-sos Share Location: You only need to change if your ISO images are not in the default location /mnt/user/isos
 				 
 Isos Share Location:  This is where macinabox will put install media and Opencore bootloader
+
+Isos Share Location: You only need to change if your ISO images are not in the default location /mnt/user/isos
                   
 appdata location:     If you change this you will need to do the same in the macinabox help user script
