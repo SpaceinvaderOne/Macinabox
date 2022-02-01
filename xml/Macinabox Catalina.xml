@@ -39,14 +39,14 @@
     <emulator>/usr/local/sbin/qemu</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='writeback'/>
-      <source file='XXXXCatalina-opencore.img'/>
+      <source file='XXXXMacinabox Catalina/Catalina-opencore.img'/>
       <target dev='hdc' bus='sata'/>
       <boot order='1'/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='writeback'/>
-      <source file='YYYYMacinabox Catalina/Catalina-install.img'/>
+      <source file='YYYYCatalina-install.img'/>
       <target dev='hdd' bus='sata'/>
       <address type='drive' controller='0' bus='0' target='0' unit='3'/>
     </disk>
