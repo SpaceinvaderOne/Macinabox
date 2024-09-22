@@ -1,49 +1,54 @@
 # Macinabox
-Unraid docker image to help install MacOS vms on an Unraid server.
-Either Monterey, Big Sur, Catalina, Mojave or High Sierra. 
-It can fully autoinstall a macOS VM on the server. Also it can prepare all files ready for a manual install if you prefer
-Tools are also provided to fix the xml when the custom xml has been stripped out of the VM after its been edited by the Unraid VM manager.
+Macinabox downloads and installs various macOS versions as a VM on your Unraid server. With this new version, there’s no need for additional helper scripts. It will fully automate the installation of the VM, create the XML file. It can get various details from your server to use in the VM creation such as seeing latest q35 available on your server and make sure VM uses that. All you need to do is choose the macOS version, specify the VM storage location, ISO location, and the container will handle the rest.
+If you make any changes to the VM in the Unraid VM manager if you rerun the container it will fix any incorrect XML. Also if you have changed CPU core count it will check wether the VM should keep or remove the topology line to ensure the VM boots correctly.
 
-Install
+On your server make sure to have notifications enabled and docker update notifications enabled. This will allow the container to send notifications as macinabox runs
 
-Download container from Unraid Community applications
+## Usage
 
-Also needed are
-You need to have the "User Scripts" plugin installed from Unraid Community applications
-Optional for the correct icons for macOS, please install  "vm_custom_icons" container from Unraid Community applications
- 
- 
-Usage  (settings changed in Unraid template)
-Operating System Version:  
-                       Choose version from below
-				Big Sur (default)
-				Monterey
-				Catalina
- 				Mojave
- 				High Sierra
-				
- VM Images Location:      Location of your vm share ( default /mnt/user/domains/ )
+**If you have an older version of Macinbox on your Unraid server. You will need to remove the old macinabox**  
 
- Install Type: 		
-   Auto install  # (This will download MacOS and install needed files into your VM location.)
-   Manual- install # (This will download MacOS and put all needed files into correct place ready for easy manual install.)
- 
-Vdisk size :   The size you want your vdisk to be created
+**Are you fully compliant with Apple’s EULA?**  
+Set this to "Yes" if you are running on Apple hardware. This is the only way to be EULA compliant. If not, leave it as "No" and the container will exit.
 
-Vdisk type:    Set vdisk type raw or qcow2
+**Operating System Version:**  
+Choose the macOS version from the options below:
+- Sonoma
+- Ventura
+- Monterey
+- Big Sur
+- Catalina
+- Mojave
+- High Sierra
 
-Opencore stock or custom:   Select the defualt Opencore in Macinabox or use one added in macinabox appdata in the folder custom_opencore
+**Custom VM Name:**  
+Use this if you want the VM name to differ from the OS version. Leave blank to use the OS name.
 
-Delete and replace Opencore:  Select No or Yes to delete your vms opencore image and replace with fresh one.
+**Vdisk Type:**  
+Set the vdisk type to either `raw` or `qcow2`.
 
-Override defualt NIC type:  Default No -  Override the default nic type in the vm going to be installed.
+**Vdisk Size:**  
+Specify the desired size for the vdisk.
 
-VM Images Location:  You only need to change if your VM images are not in the default location /mnt/user/domains
+**Delete and Replace OpenCore:**  
+Select "Yes" to delete your VM's OpenCore image and replace it with a fresh one, or "No" to keep the existing one.
 
-VM Images Location AGAIN:  Only needs changing if you changed the above. Location must match the above.
-				 
-Isos Share Location:  This is where macinabox will put install media and Opencore bootloader
+**Default NIC Type:**  
+The default is `virtio-net`. Change this to override the default NIC type for macOS versions that support it.
+(note if you install a version of macOS that doesnt support virtio it will use an emulated intel nic)
+
+**VM Images Location:**  
+Set this to your VM storage location (e.g., Domains share).
+
+**ISOs Share Location:**  
+This is where macinabox will store the install media 
+
+**Appdata Location:**  
+Specify where you want macinabox to store its appdata.
 
 Isos Share Location: You only need to change if your ISO images are not in the default location /mnt/user/isos
                   
 appdata location:     If you change this you will need to do the same in the macinabox help user script
+
+
+For a video guide on using the new macinabox please see here ........
