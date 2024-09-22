@@ -1,0 +1,1 @@
+Place custom Opencore here to use with your vm. Leave empty to use stock
