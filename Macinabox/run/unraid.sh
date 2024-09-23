@@ -136,10 +136,10 @@ autoinstall() {
 
 makeimg() {
 # check if install image has previously been created and if not convert baseimage and put in iso share
-if [ ! -e /isos/"$NAME"-install.img ] ; then
-qemu-img convert "/config/run/BaseSystem.dmg" -O raw "/isos/$NAME-install.img"
+if [ ! -e /isos/"$ISONAME"-install.img ] ; then
+qemu-img convert "/config/run/BaseSystem.dmg" -O raw "/isos/$ISONAME-install.img"
 touch /config/install_media_is_in_isos_share # make a file showing user where install media is located
-chmod 777 "/isos/$NAME-install.img"
+chmod 777 "/isos/$ISONAME-install.img"
 #cleanup - remove baseimage from macinabox appdata now its been converted and moved
 rm /config/run/BaseSystem.dmg
 rm /config/run/BaseSystem.chunklist
