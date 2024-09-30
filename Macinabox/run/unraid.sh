@@ -262,7 +262,7 @@ addxml() {
     XML_FILE="/config/macinabox_tmp.xml"
     XML_FILE2="/config/$NAME.xml"  
     UUID=$(uuidgen)
-    nvram_file=" /etc/libvirt/qemu/nvram/${UUID}_VARS-pure-efi.fd"
+    nvram_file="/etc/libvirt/qemu/nvram/${UUID}_VARS-pure-efi.fd"
     MAC=$(printf 'AC:87:A3:%02X:%02X:%02X\n' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))  # random mac address with apple prefix
 	
 
@@ -304,6 +304,11 @@ sed -i "s#<model type='XXXXXXX'/>#<model type='$overridenic'/>#" "$XML_FILE"
 # set the specific qemu argument with the value of $CPUARGS from the template
 sed -i "s#<qemu:arg value='XXXXXX'/>#<qemu:arg value='$CPUARGS'/>#" "$XML_FILE"
 
+# check for vhostX network source and change network block to suit
+if [[ $BRNAME =~ ^vhost[0-9]+$ ]]; then
+    sed -i "s#<interface type='bridge'>#<interface type='direct' trustGuestRxFilters='yes'>#" "$XML"
+    sed -i "s#<source bridge='.*'/>#<source dev='$BRNAME' mode='bridge'/>#" "$XML"
+fi
 
 # renmae the the temp xml
 mv "$XML_FILE" "$XML_FILE2"
