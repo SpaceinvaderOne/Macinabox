@@ -306,8 +306,8 @@ sed -i "s#<qemu:arg value='XXXXXX'/>#<qemu:arg value='$CPUARGS'/>#" "$XML_FILE"
 
 # check for vhostX network source and change network block to suit
 if [[ $BRNAME =~ ^vhost[0-9]+$ ]]; then
-    sed -i "s#<interface type='bridge'>#<interface type='direct' trustGuestRxFilters='yes'>#" "$XML"
-    sed -i "s#<source bridge='.*'/>#<source dev='$BRNAME' mode='bridge'/>#" "$XML"
+    sed -i "s#<interface type='bridge'>#<interface type='direct' trustGuestRxFilters='yes'>#" "$XML_FILE"
+    sed -i "s#<source bridge='.*'/>#<source dev='$BRNAME' mode='bridge'/>#" "$XML_FILE"
 fi
 
 # renmae the the temp xml
