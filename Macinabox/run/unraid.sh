@@ -262,7 +262,7 @@ addxml() {
     XML_FILE="/config/macinabox_tmp.xml"
     XML_FILE2="/config/$NAME.xml"  
     UUID=$(uuidgen)
-    nvram_file="/var/lib/libvirt/qemu/nvram/${UUID}_VARS-pure-efi.fd"
+    nvram_file=" /etc/libvirt/qemu/nvram/${UUID}_VARS-pure-efi.fd"
     MAC=$(printf 'AC:87:A3:%02X:%02X:%02X\n' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))  # random mac address with apple prefix
 	
 
