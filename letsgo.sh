@@ -1,7 +1,7 @@
 #!/bin/bash
 
 start() {
-    if [ -f /config/delete_me_to_reset.txt ]; then
+    if [ -f /config/delete_me_to_reset_v4.txt ]; then
         chmod -R 777 /config/
         cd /config/run
         ./unraid.sh  
