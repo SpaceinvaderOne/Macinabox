@@ -816,7 +816,7 @@ checkeula() {
     if [ "$OKTORUN" = "NO" ]; then
         echo "You have indicated that you are not compliant with Apple’s EULA. Running a macOS VM on non-Apple hardware violates the EULA. If your server is running on Apple hardware, such as a Mac Pro, please update the compliance variable to 'YES'. If you do not have Apple hardware and still wish to run a macOS VM, consider purchasing a used Mac Pro ('trash can' model) from eBay for a few hundred dollars. This can serve as a Linux server, allowing you to run a macOS VM without violating the EULA. However, setting this variable to 'YES' without Apple hardware will result in a breach of the EULA. You have been warned."
 
-        # notify if failure to define the VM
+        # notify if eula not compliant
         chroot /host /usr/bin/php /usr/local/emhttp/webGui/scripts/notify \
             -e "Macinabox Container" \
             -s "$NAME" \
@@ -857,14 +857,14 @@ icon() {
 }  
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# used to check if container needs a new docker template    # 
 
 check_version() {
-    # check if WHATVERSION exists and equals 3
-    if [[ "${WHATVERSION}" == "3" ]]; then
+    # check if WHATVERSION exists and equals 4
+    if [[ "${WHATVERSION}" == "4" ]]; then
         echo "Version check passed. Continuing..."
     else
-        echo "The version you are using is Macinbox version 3, but your Docker template doesn't match this version."
+        echo "The version you are using is Macinbox version 4, but your Docker template doesn't match this version."
         echo "Clearing old macinabox appdata files"
         rm -rf /config/autoinstall
         rm -rf /config/baseimage_temp
@@ -884,6 +884,15 @@ check_version() {
         echo ""
 
         echo "Exiting in 20 seconds..."
+
+          #  send a notification
+            chroot /host /usr/bin/php /usr/local/emhttp/webGui/scripts/notify \
+                -e "Macinabox Container" \
+                -s "The Template for Macinbox needs updating" \
+                -d "View the container logs to show you how" \
+                -i "warning" \
+               
+
         sleep 20
         exit 0 # Exiting the whole script
     fi
