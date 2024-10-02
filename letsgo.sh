@@ -7,6 +7,7 @@ start() {
         ./unraid.sh  
     else
         rm -f /config/*.xml
+        rm -f /config/*.txt
         rm -f /config/macinabox.png
         rm -rf /config/bootloader
         rm -rf /config/custom_opencore
