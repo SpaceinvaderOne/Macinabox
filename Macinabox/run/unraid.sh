@@ -899,10 +899,10 @@ icon() {
 
 check_version() {
     # check if WHATVERSION exists and equals 4
-    if [[ "${WHATVERSION}" == "4" ]]; then
+    if [[ "${WHATVERSION}" == "5" ]]; then
         echo "Version check passed. Continuing..."
     else
-        echo "The version you are using is Macinbox version 4, but your Docker template doesn't match this version."
+        echo "The version you are using is Macinbox version 5, but your Docker template doesn't match this version."
         echo "Clearing old macinabox appdata files"
         rm -rf /config/autoinstall
         rm -rf /config/baseimage_temp
